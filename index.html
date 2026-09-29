@@ -1,0 +1,2150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KaiTune Pro</title>
+  <style>
+    /* ==========================================================
+       1. GLOBAL RESET & FULLSCREEN RESPONSIVE LAYOUT
+       ========================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #030712;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 13px;
+    }
+
+    #phone-frame {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: linear-gradient(180deg, #0f172a 0%, #080d15 50%, #030710 100%);
+      overflow: hidden;
+    }
+
+    #bg-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.25;
+      z-index: 0;
+      pointer-events: none;
+      transition: background-image 0.3s ease;
+    }
+
+    /* ==========================================================
+       2. HEADER & STATUS
+       ========================================================== */
+    #header {
+      flex-shrink: 0;
+      height: 36px;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-weight: 700;
+      font-size: 12px;
+      border-bottom: 1px solid rgba(0, 210, 255, 0.25);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      z-index: 2;
+    }
+
+    .brand-glow {
+      color: #00d2ff;
+      text-shadow: 0 0 8px rgba(0, 210, 255, 0.5);
+    }
+
+    #header-category {
+      font-size: 11px;
+      color: #94a3b8;
+      max-width: 50%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ==========================================================
+       3. VIEWS CONTAINER & NAVIGATION LISTS
+       ========================================================== */
+    #app-container {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      z-index: 1;
+      padding: 6px;
+    }
+
+    .view {
+      display: none;
+      min-height: 100%;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding-bottom: 10px;
+    }
+
+    .nav-item {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+      margin-bottom: 4px;
+      padding: 8px 10px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+    }
+
+    .nav-item.focused, .search-box.focused {
+      background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+      border: 1px solid #38bdf8 !important;
+      box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
+      color: #ffffff !important;
+    }
+
+    .nav-item .meta {
+      display: flex;
+      flex-direction: column;
+      max-width: 80%;
+      overflow: hidden;
+    }
+
+    .nav-item .title {
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-item .subtitle {
+      font-size: 11px;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .nav-item.focused .subtitle {
+      color: #e0f2fe;
+    }
+
+    .nav-item .val {
+      font-size: 11px;
+      font-weight: bold;
+      color: #00d2ff;
+    }
+
+    .nav-item.focused .val {
+      color: #ffffff;
+    }
+
+    .search-box {
+      margin-bottom: 8px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      background: #090e17;
+      border: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box input {
+      width: 100%;
+      height: 26px;
+      background: transparent;
+      border: none;
+      color: #f8fafc;
+      padding: 0 4px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .search-box.focused input {
+      color: #ffffff;
+    }
+
+    .search-box.focused input::placeholder {
+      color: #e0f2fe;
+    }
+
+    .status-badges {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge-queue {
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    /* ==========================================================
+       4. AUDIO PLAYER & VISUALIZER
+       ========================================================== */
+    .visualizer-card {
+      width: 100%;
+      background: #05080f;
+      border-radius: 6px;
+      padding: 6px;
+      border: 1px solid rgba(0, 210, 255, 0.2);
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.9);
+    }
+
+    #visualizer-canvas {
+      width: 100%;
+      height: 100px;
+      display: block;
+    }
+
+    .player-meta {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .player-meta h3 {
+      font-size: 15px;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-meta p {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .progress-wrap {
+      width: 100%;
+      padding: 6px 0;
+    }
+
+    .progress-bar {
+      position: relative;
+      width: 100%;
+      height: 8px;
+      background: #090d16;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+    }
+
+    #progress-fill {
+      position: relative;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+      border-radius: 4px;
+    }
+
+    .time-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .info-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+      border-radius: 6px;
+      padding: 10px 12px;
+      line-height: 1.4;
+      font-size: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      margin-bottom: 8px;
+    }
+
+    .info-card h4 {
+      color: #38bdf8;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    /* ==========================================================
+       4.1 ADVANCED AUDIO CUTTER TIMELINE
+       ========================================================== */
+    .cutter-mini-player {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(0, 210, 255, 0.2);
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .cutter-mini-player h3 {
+      font-size: 13px;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cutter-mini-player p {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .cutter-timeline-track {
+      width: 100%;
+      height: 26px;
+      background: #030712;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      margin: 10px 0 6px 0;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    /* Shaded Trim Selection Range */
+    .cutter-range-selection {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0%;
+      width: 40%;
+      background: rgba(0, 210, 255, 0.25);
+      border-left: 2px solid #00d2ff;
+      border-right: 2px solid #f43f5e;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* The Real-Time Red Playhead Line */
+    #cutter-playhead-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0%;
+      width: 2.5px;
+      background: #ef4444;
+      box-shadow: 0 0 8px #ef4444, 0 0 3px #ffffff;
+      z-index: 3;
+      pointer-events: none;
+      transition: left 0.04s linear;
+    }
+
+    #cutter-playhead-line::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -3px;
+      width: 8px;
+      height: 5px;
+      background: #ef4444;
+      border-radius: 0 0 2px 2px;
+    }
+
+    .cutter-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+
+    .cutter-guide-box {
+      background: #060911;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      padding: 6px;
+      margin-top: 6px;
+      font-size: 10.5px;
+      color: #94a3b8;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .cutter-guide-box b {
+      color: #e2e8f0;
+    }
+
+    /* ==========================================================
+       5. OPTIONS MENU OVERLAY
+       ========================================================== */
+    #j2me-menu-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 36px;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 100;
+    }
+
+    #j2me-menu {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-height: 80%;
+      background: #090e17;
+      border-top: 2px solid #00d2ff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.9);
+    }
+
+    .j2me-header {
+      background: #0f172a;
+      color: #00d2ff;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 6px 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #j2me-menu-list {
+      list-style: none;
+      overflow-y: auto;
+      padding: 2px 0;
+    }
+
+    .j2me-item {
+      padding: 7px 12px;
+      font-size: 12px;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+    }
+
+    .j2me-item.focused {
+      background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .j2me-num-key {
+      display: inline-block;
+      min-width: 18px;
+      text-align: center;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 3px;
+      font-size: 10px;
+      padding: 1px 4px;
+      margin-right: 8px;
+      color: #38bdf8;
+      font-weight: bold;
+    }
+
+    .j2me-item.focused .j2me-num-key {
+      background: #ffffff;
+      color: #0369a1;
+      border-color: #ffffff;
+    }
+
+    /* ==========================================================
+       6. SOFTKEY FOOTER BAR
+       ========================================================== */
+    #softkey-bar {
+      flex-shrink: 0;
+      height: 36px;
+      background: linear-gradient(180deg, #111827 0%, #030712 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.7);
+      z-index: 2;
+    }
+
+    #softkey-left, #softkey-right {
+      color: #cbd5e1;
+      max-width: 30%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    #softkey-center {
+      color: #00d2ff;
+      text-transform: uppercase;
+      font-weight: bold;
+      text-shadow: 0 0 8px rgba(0, 210, 255, 0.6);
+      cursor: pointer;
+    }
+
+    .screen-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(3, 7, 18, 0.92);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .spinner {
+      width: 26px;
+      height: 26px;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #00d2ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div id="phone-frame">
+    <!-- Background Wallpaper -->
+    <div id="bg-overlay"></div>
+
+    <!-- Hidden file input for web fallback -->
+    <input type="file" id="bg-file-picker" accept="image/*" style="display:none;">
+
+    <div id="loading-screen" class="screen-overlay hidden">
+      <div class="spinner"></div>
+      <p id="loading-text">Loading...</p>
+    </div>
+
+    <!-- Options Menu Overlay -->
+    <div id="j2me-menu-overlay" class="hidden">
+      <div id="j2me-menu">
+        <div class="j2me-header">Options</div>
+        <ul id="j2me-menu-list"></ul>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header id="header">
+      <span class="brand-glow" id="screen-title">KaiTune Pro</span>
+      <span id="header-category">Library</span>
+    </header>
+
+    <!-- Main Container -->
+    <main id="app-container">
+
+      <!-- View 1: Categories -->
+      <section id="view-categories" class="view active">
+        <ul id="category-list" class="nav-list">
+          <li class="nav-item focusable focused" data-cat="all">
+            <div class="meta">
+              <span class="title">All Tracks</span>
+              <span class="subtitle">Complete Music Library</span>
+            </div>
+            <span class="val">&gt;</span>
+          </li>
+          <li class="nav-item focusable" data-cat="favorites">
+            <div class="meta">
+              <span class="title">&#9733; My Playlists &amp; Favorites</span>
+              <span class="subtitle" id="sub-fav-count">0 saved tracks</span>
+            </div>
+            <span class="val">&gt;</span>
+          </li>
+          <li class="nav-item focusable" data-cat="electronic">
+            <div class="meta">
+              <span class="title">Electronic &amp; Synth</span>
+              <span class="subtitle">Cyberpunk, Bass &amp; Beats</span>
+            </div>
+            <span class="val">&gt;</span>
+          </li>
+          <li class="nav-item focusable" data-cat="acoustic">
+            <div class="meta">
+              <span class="title">Acoustic &amp; Chill</span>
+              <span class="subtitle">Guitar, Melodies &amp; Ambience</span>
+            </div>
+            <span class="val">&gt;</span>
+          </li>
+          <li class="nav-item focusable" data-cat="ringtones">
+            <div class="meta">
+              <span class="title">Ringtones &amp; FX</span>
+              <span class="subtitle">Short Clips &amp; Alert Tunes</span>
+            </div>
+            <span class="val">&gt;</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- View 2: Track List View -->
+      <section id="view-list" class="view">
+        <div class="search-box focusable" id="search-box-wrap">
+          <input type="text" id="search-input" placeholder="Search track... (Down arrow to list)">
+        </div>
+        <div class="status-badges">
+          <span id="badge-shuffle" class="badge">SHUF: OFF</span>
+          <span id="badge-repeat" class="badge">REP: ALL</span>
+          <span id="badge-queue-stat" class="badge badge-queue">QUEUE: 0</span>
+        </div>
+        <ul id="track-list" class="nav-list"></ul>
+      </section>
+
+      <!-- View 3: Now Playing Screen -->
+      <section id="view-player" class="view">
+        <div class="visualizer-card">
+          <canvas id="visualizer-canvas"></canvas>
+        </div>
+        <div class="player-meta">
+          <h3 id="player-title">Track Title</h3>
+          <p id="player-artist">Artist Name</p>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="progress-bar-container">
+            <div id="progress-fill"></div>
+          </div>
+          <div class="time-labels">
+            <span id="cur-time">0:00</span>
+            <span id="total-time">0:00</span>
+          </div>
+        </div>
+        <div class="status-badges" style="margin-top: 6px;">
+          <span id="player-speed-badge" class="badge">Speed: 1.0x</span>
+          <span id="player-rep-badge" class="badge">Repeat: ALL</span>
+          <span id="player-queue-badge" class="badge badge-queue">Queue: 0</span>
+        </div>
+      </section>
+
+      <!-- View 4: Audio Cutter with Integrated Player & Live Red Playhead -->
+      <section id="view-cutter" class="view">
+        <div class="cutter-mini-player">
+          <h3 id="cutter-track-title">Selected Track</h3>
+          <p id="cutter-track-artist">Artist Name</p>
+        </div>
+
+        <div class="info-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h4 style="margin:0;">Ringtone Cutter</h4>
+            <span id="cutter-play-state" class="badge" style="font-size:9px;">STOPPED</span>
+          </div>
+
+          <!-- Timeline Track with Shaded Range & Live Red Playhead Line -->
+          <div class="cutter-timeline-track" id="cutter-timeline-container" title="Click to seek">
+            <div id="cutter-range-fill" class="cutter-range-selection"></div>
+            <div id="cutter-playhead-line"></div>
+          </div>
+
+          <div class="time-labels" style="margin-top: 2px; margin-bottom: 8px;">
+            <span id="cutter-cur-time" style="color:#ef4444; font-weight:bold;">0:00</span>
+            <span id="cutter-total-time">0:00</span>
+          </div>
+
+          <div class="cutter-row">
+            <span>Start Point [ <b>*</b> ]:</span>
+            <span id="cut-start-val" style="color: #00d2ff; font-weight: bold;">0.0s</span>
+          </div>
+          <div class="cutter-row">
+            <span>End Point [ <b>#</b> ]:</span>
+            <span id="cut-end-val" style="color: #f43f5e; font-weight: bold;">30.0s</span>
+          </div>
+          <div class="cutter-row">
+            <span>Clip Duration:</span>
+            <span id="cut-duration-val" style="color: #38bdf8; font-weight: bold;">30.0s</span>
+          </div>
+
+          <div class="cutter-guide-box">
+            Press <b>[Center / Enter]</b> Play/Pause &bull; <b>[Left/Right]</b> Seek &bull; <b>[*]</b> Set Start &bull; <b>[#]</b> Set End &bull; <b>[Options]</b> Export / Listen
+          </div>
+        </div>
+      </section>
+
+      <!-- View 5: Settings & EQ -->
+      <section id="view-settings" class="view">
+        <ul class="nav-list" id="settings-list">
+          <li class="nav-item focusable" data-action="bass">
+            <span>Bass Boost:</span>
+            <span class="val" id="val-bass">+0 dB</span>
+          </li>
+          <li class="nav-item focusable" data-action="treble">
+            <span>Treble:</span>
+            <span class="val" id="val-treble">+0 dB</span>
+          </li>
+          <li class="nav-item focusable" data-action="speed">
+            <span>Playback Speed:</span>
+            <span class="val" id="val-speed">1.0x</span>
+          </li>
+          <li class="nav-item focusable" data-action="theme">
+            <span>Spectrum Theme:</span>
+            <span class="val" id="val-theme">CYAN</span>
+          </li>
+          <li class="nav-item focusable" data-action="toggle-shuffle">
+            <span>Shuffle Mode:</span>
+            <span class="val" id="val-shuffle">OFF</span>
+          </li>
+          <li class="nav-item focusable" data-action="toggle-repeat">
+            <span>Repeat Mode:</span>
+            <span class="val" id="val-repeat">ALL</span>
+          </li>
+          <li class="nav-item focusable" data-action="custom-bg">
+            <span>Set BG (KaiOS Storage)</span>
+            <span class="val">&gt;</span>
+          </li>
+          <li class="nav-item focusable" data-action="clear-bg">
+            <span>Reset Default BG</span>
+            <span class="val">&times;</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- View 6: Help Guide -->
+      <section id="view-help" class="view">
+        <div class="info-card">
+          <h4>Keypad Controls</h4>
+          <p><b>[ Escape / SoftLeft / F1 ]</b> Open Options Menu</p>
+          <p><b>[ SoftRight / F2 / Backspace ]</b> Back / Exit</p>
+          <p><b>[ 1 ]</b> Focus Search Bar</p>
+          <p><b>[ 2 ]</b> Toggle Shuffle Mode</p>
+          <p><b>[ 3 ]</b> Toggle Repeat Mode</p>
+          <p><b>[ 4 ]</b> Download / Save Track</p>
+          <p><b>[ 5 ]</b> Add Focused Track to Queue (Play Next)</p>
+          <p><b>[ * ]</b> Set Cutter Start Point</p>
+          <p><b>[ # ]</b> Set Cutter End Point</p>
+          <p><b>[ Left / Right ]</b> 5s Seek (Player) / 2s Seek (Cutter)</p>
+          <p><b>[ Center / Enter ]</b> Select / Play / Pause</p>
+        </div>
+      </section>
+
+      <!-- View 7: About App -->
+      <section id="view-about" class="view">
+        <div class="info-card">
+          <h4>About KaiTune Pro</h4>
+          <p><b>Version:</b> 3.1 Pro Audio Suite</p>
+          <p><b>Audio Trimmer:</b> Live Timeline Red Playhead, Clip Looper &amp; Direct WAV Exporter.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer Softkeys -->
+    <footer id="softkey-bar">
+      <div id="softkey-left">Options</div>
+      <div id="softkey-center">Open</div>
+      <div id="softkey-right">Exit</div>
+    </footer>
+  </div>
+
+  <script>
+    /* ==========================================================
+       1. WEB AUDIO ENGINE
+       ========================================================== */
+    var AudioEngine = (function () {
+      var audio = new Audio();
+      audio.crossOrigin = "anonymous";
+      if ('mozAudioChannelType' in audio) {
+        audio.mozAudioChannelType = 'content';
+      }
+
+      var audioCtx = null;
+      var sourceNode = null;
+      var analyserNode = null;
+      var bassFilter = null;
+      var trebleFilter = null;
+      var isInitialized = false;
+
+      var canvas = document.getElementById('visualizer-canvas');
+      var ctx = canvas ? canvas.getContext('2d') : null;
+      var currentTheme = 'cyan';
+      var animFrameId = null;
+
+      function resizeCanvas() {
+        if (canvas) {
+          canvas.width = canvas.clientWidth || 240;
+          canvas.height = canvas.clientHeight || 100;
+        }
+      }
+      window.addEventListener('resize', resizeCanvas);
+
+      function initContext() {
+        try {
+          var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+
+          if (!audioCtx) {
+            audioCtx = new AudioContextClass();
+          }
+
+          if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+
+          if (!isInitialized) {
+            sourceNode = audioCtx.createMediaElementSource(audio);
+            analyserNode = audioCtx.createAnalyser();
+            analyserNode.fftSize = 64;
+
+            bassFilter = audioCtx.createBiquadFilter();
+            bassFilter.type = 'lowshelf';
+            bassFilter.frequency.value = 200;
+
+            trebleFilter = audioCtx.createBiquadFilter();
+            trebleFilter.type = 'highshelf';
+            trebleFilter.frequency.value = 3000;
+
+            sourceNode.connect(bassFilter);
+            bassFilter.connect(trebleFilter);
+            trebleFilter.connect(analyserNode);
+            analyserNode.connect(audioCtx.destination);
+
+            isInitialized = true;
+            resizeCanvas();
+            startVisualizerLoop();
+          }
+        } catch (e) {
+          console.warn("AudioEngine Exception:", e);
+        }
+      }
+
+      function setBass(db) { if (bassFilter) bassFilter.gain.value = db; }
+      function setTreble(db) { if (trebleFilter) trebleFilter.gain.value = db; }
+      function setSpeed(rate) { audio.playbackRate = rate; }
+      function setTheme(theme) { currentTheme = theme; }
+
+      function startVisualizerLoop() {
+        if (!analyserNode || !ctx || animFrameId) return;
+        var bufferLength = analyserNode.frequencyBinCount;
+        var dataArray = new Uint8Array(bufferLength);
+
+        function draw() {
+          animFrameId = requestAnimationFrame(draw);
+          analyserNode.getByteFrequencyData(dataArray);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          var barWidth = (canvas.width / bufferLength) * 1.5;
+          var x = 0;
+
+          for (var i = 0; i < bufferLength; i++) {
+            var barHeight = (dataArray[i] / 255) * canvas.height;
+            var gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
+
+            if (currentTheme === 'cyan') {
+              gradient.addColorStop(0, '#0284c7');
+              gradient.addColorStop(1, '#00d2ff');
+            } else if (currentTheme === 'fire') {
+              gradient.addColorStop(0, '#ea580c');
+              gradient.addColorStop(1, '#facc15');
+            } else {
+              gradient.addColorStop(0, '#059669');
+              gradient.addColorStop(1, '#34d399');
+            }
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(x, canvas.height - barHeight, Math.max(1, barWidth - 1.5), barHeight);
+            x += barWidth;
+          }
+        }
+        draw();
+      }
+
+      return {
+        audio: audio,
+        init: initContext,
+        setBass: setBass,
+        setTreble: setTreble,
+        setSpeed: setSpeed,
+        setTheme: setTheme,
+        resizeCanvas: resizeCanvas
+      };
+    })();
+
+    /* ==========================================================
+       2. AUDIO CUTTER & WAV EXPORTER MODULE
+       ========================================================== */
+    var AudioCutter = (function () {
+      var startTime = 0;
+      var endTime = 30;
+      var isPreviewingClip = false;
+
+      function trimAudio(url, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function () {
+          var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) {
+            alert('Web Audio API not supported on this browser.');
+            if (callback) callback(null);
+            return;
+          }
+          var ctx = new AudioContextClass();
+          ctx.decodeAudioData(xhr.response, function (decoded) {
+            var duration = decoded.duration;
+            var start = Math.max(0, Math.min(startTime, duration));
+            var end = Math.max(start + 0.1, Math.min(endTime, duration));
+
+            var frameCount = Math.max(1, Math.floor((end - start) * decoded.sampleRate));
+            var trimmed = ctx.createBuffer(decoded.numberOfChannels, frameCount, decoded.sampleRate);
+
+            for (var ch = 0; ch < decoded.numberOfChannels; ch++) {
+              var chData = decoded.getChannelData(ch);
+              var newChData = trimmed.getChannelData(ch);
+              var startOffset = Math.floor(start * decoded.sampleRate);
+              for (var i = 0; i < frameCount; i++) {
+                newChData[i] = (startOffset + i < chData.length) ? chData[startOffset + i] : 0;
+              }
+            }
+            var wavBlob = bufferToWave(trimmed, frameCount);
+            if (callback) callback(wavBlob);
+          }, function (err) {
+            alert('Failed to decode audio data: ' + (err || 'Unknown error'));
+            if (callback) callback(null);
+          });
+        };
+        xhr.onerror = function () {
+          alert('Network error while fetching audio file.');
+          if (callback) callback(null);
+        };
+        xhr.send();
+      }
+
+      function bufferToWave(abuffer, len) {
+        var numOfChan = abuffer.numberOfChannels;
+        var length = len * numOfChan * 2 + 44;
+        var out = new ArrayBuffer(length);
+        var view = new DataView(out);
+        var pos = 0;
+
+        function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+        function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+
+        setUint32(0x46464952); // "RIFF"
+        setUint32(length - 8);
+        setUint32(0x45564157); // "WAVE"
+        setUint32(0x20746d66); // "fmt "
+        setUint32(16);
+        setUint16(1);          // PCM format
+        setUint16(numOfChan);
+        setUint32(abuffer.sampleRate);
+        setUint32(abuffer.sampleRate * 2 * numOfChan);
+        setUint16(numOfChan * 2);
+        setUint16(16);         // 16-bit
+        setUint32(0x61746164); // "data"
+        setUint32(length - pos - 4);
+
+        var channels = [];
+        for (var i = 0; i < numOfChan; i++) channels.push(abuffer.getChannelData(i));
+
+        var offset = 0;
+        while (pos < length && offset < len) {
+          for (var j = 0; j < numOfChan; j++) {
+            var sample = Math.max(-1, Math.min(1, channels[j][offset] || 0));
+            sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+            view.setInt16(pos, sample, true);
+            pos += 2;
+          }
+          offset++;
+        }
+        return new Blob([out], { type: "audio/wav" });
+      }
+
+      return {
+        setStart: function (t) { startTime = Math.max(0, t); },
+        setEnd: function (t) { endTime = Math.max(startTime + 0.2, t); },
+        getStart: function () { return startTime; },
+        getEnd: function () { return endTime; },
+        getIsPreviewing: function () { return isPreviewingClip; },
+        setIsPreviewing: function (val) { isPreviewingClip = val; },
+        trimAudio: trimAudio
+      };
+    })();
+
+    /* ==========================================================
+       3. CONTROLLER & NAVIGATION
+       ========================================================== */
+    document.addEventListener('DOMContentLoaded', function () {
+      var defaultTracks = [
+        { id: "1", title: "Cyber Beat Ringtone", artist: "Synth Lab", category: "electronic", url: "https://actions.google.com/sounds/v1/science_fiction/scifi_laser_burst.ogg" },
+        { id: "2", title: "Electro Bass Drop", artist: "Pulse Studio", category: "electronic", url: "https://actions.google.com/sounds/v1/science_fiction/teleport.ogg" },
+        { id: "3", title: "Acoustic Melody", artist: "Guitar Vibes", category: "acoustic", url: "https://actions.google.com/sounds/v1/ambiences/outdoor_market.ogg" },
+        { id: "4", title: "Peaceful Morning", artist: "Zenith Sound", category: "acoustic", url: "https://actions.google.com/sounds/v1/weather/light_rain.ogg" },
+        { id: "5", title: "Notification Chime FX", artist: "Bell Tone", category: "ringtones", url: "https://actions.google.com/sounds/v1/foley/beeps_single.ogg" }
+      ];
+
+      var allTracks = defaultTracks.slice();
+      var playbackQueue = [];
+      var favorites = JSON.parse(localStorage.getItem('kune_favorites') || '[]');
+
+      var currentCategory = 'all';
+      var displayedTracks = [];
+      var currentTrackIndex = 0;
+      var currentTrackObject = null;
+      var currentView = 'view-categories';
+      var viewHistory = [];
+      var focusedIndex = 0;
+      var isPlaying = false;
+
+      var isMenuOpen = false;
+      var menuFocusedIndex = 0;
+      var currentMenuOptions = [];
+
+      var isShuffle = false;
+      var repeatMode = 'all';
+
+      var bassLevel = 0;
+      var trebleLevel = 0;
+      var currentSpeed = 1.0;
+      var speeds = [0.75, 1.0, 1.25, 1.5, 2.0];
+      var themes = ['cyan', 'fire', 'emerald'];
+      var themeIndex = 0;
+
+      // Load tracks from tracks.json
+      function loadExternalTracks() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'tracks.json', true);
+        xhr.onload = function () {
+          if (xhr.status === 200 || xhr.status === 0) {
+            try {
+              var parsed = JSON.parse(xhr.responseText);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                allTracks = parsed;
+                updateFavCountBadge();
+              }
+            } catch (e) {
+              console.warn("Could not parse tracks.json, using fallback.");
+            }
+          }
+        };
+        xhr.onerror = function() {
+          console.warn("tracks.json not found, using fallback data.");
+        };
+        xhr.send();
+      }
+      loadExternalTracks();
+
+      // Restore saved wallpaper
+      var savedBg = localStorage.getItem('kune_custom_bg');
+      if (savedBg) {
+        document.getElementById('bg-overlay').style.backgroundImage = 'url(' + savedBg + ')';
+      }
+
+      function updateFavCountBadge() {
+        var el = document.getElementById('sub-fav-count');
+        if (el) el.innerText = favorites.length + ' saved tracks';
+      }
+      updateFavCountBadge();
+
+      function updateQueueBadges() {
+        var b1 = document.getElementById('badge-queue-stat');
+        var b2 = document.getElementById('player-queue-badge');
+        if (b1) b1.innerText = 'QUEUE: ' + playbackQueue.length;
+        if (b2) b2.innerText = 'Queue: ' + playbackQueue.length;
+      }
+
+      function toggleLoading(show, text) {
+        var el = document.getElementById('loading-screen');
+        document.getElementById('loading-text').innerText = text || 'Loading...';
+        el.className = show ? 'screen-overlay' : 'screen-overlay hidden';
+      }
+
+      function openCategory(catId, catName) {
+        currentCategory = catId;
+        document.getElementById('header-category').innerText = catName;
+        document.getElementById('search-input').value = '';
+
+        if (catId === 'all') {
+          displayedTracks = allTracks.slice();
+        } else if (catId === 'favorites') {
+          displayedTracks = allTracks.filter(function (t) { return favorites.indexOf(t.id) !== -1; });
+        } else {
+          displayedTracks = allTracks.filter(function (t) { return t.category === catId; });
+        }
+        renderTrackList(displayedTracks);
+        switchView('view-list');
+      }
+
+      function renderTrackList(list) {
+        var ul = document.getElementById('track-list');
+        ul.innerHTML = '';
+        if (list.length === 0) {
+          ul.innerHTML = '<li class="nav-item" style="justify-content:center; color:#94a3b8;">No tracks found</li>';
+          return;
+        }
+
+        for (var i = 0; i < list.length; i++) {
+          var t = list[i];
+          var isFav = favorites.indexOf(t.id) !== -1;
+          var li = document.createElement('li');
+          li.className = 'nav-item focusable';
+          li.dataset.index = i;
+          li.innerHTML = '<div class="meta">' +
+            '<span class="title">' + (isFav ? '&#9733; ' : '') + t.title + '</span>' +
+            '<span class="subtitle">' + t.artist + '</span>' +
+            '</div>' +
+            '<span class="val">&#9654;</span>';
+
+          (function (idx) {
+            li.addEventListener('click', function () {
+              focusedIndex = idx + 1;
+              switchView('view-player');
+              playTrackByIndex(idx);
+            });
+          })(i);
+
+          ul.appendChild(li);
+        }
+      }
+
+      function updateFocus() {
+        var items = document.querySelectorAll('#' + currentView + ' .focusable');
+        if (items.length === 0) {
+          updateSoftkeys();
+          return;
+        }
+
+        if (focusedIndex >= items.length) focusedIndex = items.length - 1;
+        if (focusedIndex < 0) focusedIndex = 0;
+
+        for (var i = 0; i < items.length; i++) {
+          if (i === focusedIndex) {
+            items[i].classList.add('focused');
+            if (items[i].scrollIntoView) {
+              items[i].scrollIntoView({ block: 'nearest' });
+            }
+          } else {
+            items[i].classList.remove('focused');
+          }
+        }
+
+        var searchInput = document.getElementById('search-input');
+        if (currentView === 'view-list' && focusedIndex === 0) {
+          searchInput.focus();
+        } else if (searchInput) {
+          searchInput.blur();
+        }
+
+        updateSoftkeys();
+      }
+
+      /* ==========================================================
+         4. CONTEXT-AWARE OPTIONS MENU BUILDER
+         ========================================================== */
+      function buildOptionsMenu() {
+        var ul = document.getElementById('j2me-menu-list');
+        ul.innerHTML = '';
+        currentMenuOptions = [];
+
+        var hasActiveAudio = AudioEngine.audio && AudioEngine.audio.src && AudioEngine.audio.src !== '';
+        var isTrackSelected = (currentView === 'view-list' && focusedIndex > 0 && displayedTracks.length > 0);
+        var activeFocusedTrack = isTrackSelected ? displayedTracks[focusedIndex - 1] : (currentTrackObject || allTracks[0]);
+        var isFav = (activeFocusedTrack && favorites.indexOf(activeFocusedTrack.id) !== -1);
+
+        // 1. Categories View Context
+        if (currentView === 'view-categories') {
+          if (hasActiveAudio) {
+            currentMenuOptions.push({ key: '1', cmd: 'nowplaying', label: 'Now Playing' });
+          }
+          currentMenuOptions.push({ key: '2', cmd: 'search_all', label: 'Search All Tracks' });
+          currentMenuOptions.push({ key: '3', cmd: 'open_favorites', label: 'My Favorites Playlist' });
+          currentMenuOptions.push({ key: '4', cmd: 'settings', label: 'Equalizer & Settings' });
+          currentMenuOptions.push({ key: '5', cmd: 'wallpaper', label: 'Set BG from Storage' });
+          currentMenuOptions.push({ key: '6', cmd: 'help', label: 'Help Guide' });
+          currentMenuOptions.push({ key: '7', cmd: 'about', label: 'About KaiTune' });
+          currentMenuOptions.push({ key: '0', cmd: 'exit', label: 'Exit' });
+        }
+        // 2. Track List View Context
+        else if (currentView === 'view-list') {
+          if (isTrackSelected) {
+            currentMenuOptions.push({ key: '1', cmd: 'play_selected', label: 'Play Track' });
+            currentMenuOptions.push({ key: '2', cmd: 'add_queue', label: 'Play Next (Add to Queue)' });
+            currentMenuOptions.push({ key: '3', cmd: 'toggle_fav', label: isFav ? 'Remove from Favorites' : 'Add to Favorites' });
+            currentMenuOptions.push({ key: '4', cmd: 'cutter', label: 'Ringtone Cutter (Trim)' });
+            currentMenuOptions.push({ key: '5', cmd: 'ringtone', label: 'Set as Ringtone' });
+            currentMenuOptions.push({ key: '6', cmd: 'storage', label: 'Save to Storage' });
+          }
+          currentMenuOptions.push({ key: '7', cmd: 'shuffle', label: 'Shuffle: ' + (isShuffle ? 'ON' : 'OFF') });
+          currentMenuOptions.push({ key: '8', cmd: 'repeat', label: 'Repeat: ' + repeatMode.toUpperCase() });
+          if (hasActiveAudio) {
+            currentMenuOptions.push({ key: '9', cmd: 'nowplaying', label: 'Now Playing Screen' });
+          }
+          currentMenuOptions.push({ key: '0', cmd: 'exit', label: 'Exit' });
+        }
+        // 3. Player View Context
+        else if (currentView === 'view-player') {
+          currentMenuOptions.push({ key: '1', cmd: 'cutter', label: 'Ringtone Cutter (Trim)' });
+          currentMenuOptions.push({ key: '2', cmd: 'toggle_fav', label: isFav ? 'Remove from Favorites' : 'Add to Favorites' });
+          currentMenuOptions.push({ key: '3', cmd: 'ringtone', label: 'Set as Ringtone' });
+          currentMenuOptions.push({ key: '4', cmd: 'storage', label: 'Save Track (Download)' });
+          currentMenuOptions.push({ key: '5', cmd: 'shuffle', label: 'Shuffle: ' + (isShuffle ? 'ON' : 'OFF') });
+          currentMenuOptions.push({ key: '6', cmd: 'repeat', label: 'Repeat: ' + repeatMode.toUpperCase() });
+          currentMenuOptions.push({ key: '7', cmd: 'settings', label: 'Equalizer & FX' });
+          currentMenuOptions.push({ key: '8', cmd: 'toggle_theme', label: 'Spectrum Theme: ' + themes[themeIndex].toUpperCase() });
+          currentMenuOptions.push({ key: '9', cmd: 'help', label: 'Help Guide' });
+          currentMenuOptions.push({ key: '0', cmd: 'exit', label: 'Exit' });
+        }
+        // 4. Audio Cutter View Context
+        else if (currentView === 'view-cutter') {
+          currentMenuOptions.push({ key: '1', cmd: 'export_cut', label: 'Export / Download Trimmed WAV' });
+          currentMenuOptions.push({ key: '2', cmd: 'play_preview_range', label: 'Listen Selected Clip' });
+          currentMenuOptions.push({ key: '3', cmd: 'ringtone_trimmed', label: 'Set Trimmed as Ringtone' });
+          currentMenuOptions.push({ key: '4', cmd: 'reset_cutter', label: 'Reset Markers (0s - End)' });
+          currentMenuOptions.push({ key: '5', cmd: 'nowplaying', label: 'Back to Player' });
+          currentMenuOptions.push({ key: '6', cmd: 'help', label: 'Cutter Help Guide' });
+        }
+        // 5. Settings View Context
+        else if (currentView === 'view-settings') {
+          currentMenuOptions.push({ key: '1', cmd: 'reset_eq', label: 'Reset EQ to Default' });
+          currentMenuOptions.push({ key: '2', cmd: 'wallpaper', label: 'Set BG from Storage' });
+          currentMenuOptions.push({ key: '3', cmd: 'clear_wallpaper', label: 'Reset Default BG' });
+          currentMenuOptions.push({ key: '4', cmd: 'help', label: 'Help Guide' });
+          currentMenuOptions.push({ key: '5', cmd: 'about', label: 'About KaiTune' });
+        }
+        // 6. Help / About View Context
+        else {
+          if (hasActiveAudio) {
+            currentMenuOptions.push({ key: '1', cmd: 'nowplaying', label: 'Now Playing' });
+          }
+          currentMenuOptions.push({ key: '2', cmd: 'settings', label: 'Settings' });
+          currentMenuOptions.push({ key: '0', cmd: 'exit', label: 'Exit' });
+        }
+
+        // Render Menu Items
+        for (var i = 0; i < currentMenuOptions.length; i++) {
+          var opt = currentMenuOptions[i];
+          var li = document.createElement('li');
+          li.className = 'j2me-item' + (i === 0 ? ' focused' : '');
+          li.dataset.cmd = opt.cmd;
+          li.innerHTML = '<span class="j2me-num-key">' + opt.key + '</span> ' + opt.label;
+
+          (function (cmd) {
+            li.addEventListener('click', function () {
+              executeMenuCommand(cmd);
+            });
+          })(opt.cmd);
+
+          ul.appendChild(li);
+        }
+      }
+
+      function updateMenuFocus() {
+        var items = document.querySelectorAll('#j2me-menu-list .j2me-item');
+        for (var i = 0; i < items.length; i++) {
+          if (i === menuFocusedIndex) {
+            items[i].classList.add('focused');
+            if (items[i].scrollIntoView) items[i].scrollIntoView({ block: 'nearest' });
+          } else {
+            items[i].classList.remove('focused');
+          }
+        }
+      }
+
+      function toggleJ2meMenu(open) {
+        isMenuOpen = open;
+        var menuEl = document.getElementById('j2me-menu-overlay');
+        if (isMenuOpen) {
+          buildOptionsMenu();
+          menuEl.className = '';
+          menuFocusedIndex = 0;
+          updateMenuFocus();
+        } else {
+          menuEl.className = 'hidden';
+        }
+        updateSoftkeys();
+      }
+
+      function updateSoftkeys() {
+        var l = document.getElementById('softkey-left');
+        var c = document.getElementById('softkey-center');
+        var r = document.getElementById('softkey-right');
+
+        if (isMenuOpen) {
+          l.innerText = 'Select';
+          c.innerText = 'Select';
+          r.innerText = 'Back';
+        } else if (currentView === 'view-categories') {
+          l.innerText = 'Options';
+          c.innerText = 'Open';
+          r.innerText = 'Exit';
+        } else if (currentView === 'view-list') {
+          l.innerText = 'Options';
+          c.innerText = (focusedIndex === 0) ? 'Focus' : 'Play';
+          r.innerText = 'Back';
+        } else if (currentView === 'view-player') {
+          l.innerText = 'Options';
+          c.innerText = isPlaying ? 'Pause' : 'Play';
+          r.innerText = 'Back';
+        } else if (currentView === 'view-cutter') {
+          l.innerText = 'Options';
+          c.innerText = isPlaying ? 'Pause' : 'Play';
+          r.innerText = 'Back';
+        } else {
+          l.innerText = 'Options';
+          c.innerText = 'Select';
+          r.innerText = 'Back';
+        }
+      }
+
+      /* ==========================================================
+         5. CUTTER UI & TIMELINE RED LINE UPDATES
+         ========================================================== */
+      function setupCutterScreen() {
+        var track = currentTrackObject || (displayedTracks.length > 0 ? displayedTracks[0] : allTracks[0]);
+        if (!track) return;
+
+        currentTrackObject = track;
+        document.getElementById('cutter-track-title').innerText = track.title;
+        document.getElementById('cutter-track-artist').innerText = track.artist;
+
+        if (!AudioEngine.audio.src || AudioEngine.audio.src === '' || AudioEngine.audio.src !== track.url) {
+          AudioEngine.init();
+          AudioEngine.audio.src = track.url;
+          AudioEngine.audio.load();
+        }
+
+        var dur = AudioEngine.audio.duration || 30;
+        AudioCutter.setStart(0);
+        AudioCutter.setEnd(Math.min(30, dur));
+
+        document.getElementById('cut-start-val').innerText = '0.0s';
+        document.getElementById('cut-end-val').innerText = (Math.min(30, dur)).toFixed(1) + 's';
+        document.getElementById('cut-duration-val').innerText = (Math.min(30, dur)).toFixed(1) + 's';
+
+        updateCutterTimelineUI();
+      }
+
+      function updateCutterTimelineUI() {
+        var dur = AudioEngine.audio.duration || 30;
+        var cur = AudioEngine.audio.currentTime || 0;
+
+        var start = AudioCutter.getStart();
+        var end = AudioCutter.getEnd();
+
+        var startPct = (start / dur) * 100;
+        var endPct = (end / dur) * 100;
+        var rangeEl = document.getElementById('cutter-range-fill');
+        if (rangeEl) {
+          rangeEl.style.left = Math.min(100, Math.max(0, startPct)) + '%';
+          rangeEl.style.width = Math.min(100 - startPct, Math.max(1, endPct - startPct)) + '%';
+        }
+
+        var playheadPct = (cur / dur) * 100;
+        var playheadEl = document.getElementById('cutter-playhead-line');
+        if (playheadEl) {
+          playheadEl.style.left = Math.min(99.5, Math.max(0, playheadPct)) + '%';
+        }
+
+        document.getElementById('cutter-cur-time').innerText = formatTime(cur);
+        document.getElementById('cutter-total-time').innerText = formatTime(dur);
+        document.getElementById('cutter-play-state').innerText = isPlaying ? 'PLAYING' : 'PAUSED';
+      }
+
+      function playTrackDirect(track) {
+        if (!track) return;
+        currentTrackObject = track;
+
+        document.getElementById('player-title').innerText = track.title;
+        document.getElementById('player-artist').innerText = track.artist;
+
+        toggleLoading(true, 'Buffering Audio...');
+        AudioEngine.init();
+        AudioEngine.audio.src = track.url;
+        AudioEngine.audio.load();
+
+        AudioEngine.audio.oncanplay = function () {
+          toggleLoading(false);
+          AudioEngine.audio.play().then(function() {
+            isPlaying = true;
+            updateSoftkeys();
+            AudioEngine.resizeCanvas();
+            if (currentView === 'view-cutter') updateCutterTimelineUI();
+          }).catch(function(e) {
+            console.warn("Autoplay Error:", e);
+          });
+        };
+
+        AudioEngine.audio.ontimeupdate = function () {
+          var cur = AudioEngine.audio.currentTime;
+          var dur = AudioEngine.audio.duration || 1;
+
+          // Clip Preview Looper/Stopper Logic
+          if (currentView === 'view-cutter' && AudioCutter.getIsPreviewing()) {
+            if (cur >= AudioCutter.getEnd()) {
+              AudioEngine.audio.pause();
+              AudioEngine.audio.currentTime = AudioCutter.getStart();
+              isPlaying = false;
+              AudioCutter.setIsPreviewing(false);
+              updateSoftkeys();
+              updateCutterTimelineUI();
+              return;
+            }
+          }
+
+          // Player View progress update
+          document.getElementById('progress-fill').style.width = ((cur / dur) * 100) + '%';
+          document.getElementById('cur-time').innerText = formatTime(cur);
+          document.getElementById('total-time').innerText = formatTime(dur);
+
+          // Cutter View Live Red Line update
+          if (currentView === 'view-cutter') {
+            updateCutterTimelineUI();
+          }
+        };
+
+        AudioEngine.audio.onended = function () {
+          if (playbackQueue.length > 0) {
+            var nextQueued = playbackQueue.shift();
+            updateQueueBadges();
+            playTrackDirect(nextQueued);
+            return;
+          }
+
+          if (repeatMode === 'one') {
+            AudioEngine.audio.currentTime = 0;
+            AudioEngine.audio.play();
+          } else if (repeatMode === 'all') {
+            var nextIdx = isShuffle ? Math.floor(Math.random() * displayedTracks.length) : (currentTrackIndex + 1) % displayedTracks.length;
+            playTrackByIndex(nextIdx);
+          } else if (repeatMode === 'off') {
+            if (currentTrackIndex < displayedTracks.length - 1) {
+              playTrackByIndex(currentTrackIndex + 1);
+            } else {
+              isPlaying = false;
+              updateSoftkeys();
+            }
+          }
+        };
+
+        AudioEngine.audio.onerror = function () {
+          toggleLoading(false);
+          alert("Unable to load audio track.");
+        };
+      }
+
+      function playTrackByIndex(index) {
+        if (index < 0 || index >= displayedTracks.length) return;
+        currentTrackIndex = index;
+        playTrackDirect(displayedTracks[currentTrackIndex]);
+      }
+
+      function formatTime(sec) {
+        if (isNaN(sec)) return "0:00";
+        var m = Math.floor(sec / 60);
+        var s = Math.floor(sec % 60);
+        return m + ':' + (s < 10 ? '0' : '') + s;
+      }
+
+      function toggleFavorite(track) {
+        if (!track) return;
+        var idx = favorites.indexOf(track.id);
+        if (idx === -1) {
+          favorites.push(track.id);
+          alert("Added to Favorites Playlist!");
+        } else {
+          favorites.splice(idx, 1);
+          alert("Removed from Favorites Playlist!");
+        }
+        localStorage.setItem('kune_favorites', JSON.stringify(favorites));
+        updateFavCountBadge();
+        if (currentCategory === 'favorites') {
+          displayedTracks = allTracks.filter(function (t) { return favorites.indexOf(t.id) !== -1; });
+          renderTrackList(displayedTracks);
+        }
+      }
+
+      function addToQueue(track) {
+        if (!track) return;
+        playbackQueue.push(track);
+        updateQueueBadges();
+        alert("Added to Next in Queue!");
+      }
+
+      function saveBlobToStorage(blob, fileName, successMsg) {
+        if (!blob) return;
+        if (navigator.getDeviceStorage) {
+          var storage = navigator.getDeviceStorage('music') || navigator.getDeviceStorage('sdcard');
+          if (storage) {
+            var req = storage.addNamed(blob, fileName);
+            req.onsuccess = function () {
+              alert(successMsg || "File saved to device storage!");
+            };
+            req.onerror = function () {
+              // Try browser download fallback on storage error
+              fallbackBrowserDownload(blob, fileName);
+            };
+            return;
+          }
+        }
+        fallbackBrowserDownload(blob, fileName);
+      }
+
+      function fallbackBrowserDownload(blob, fileName) {
+        try {
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          }, 500);
+          alert("Download started: " + fileName);
+        } catch (e) {
+          alert("Failed to initiate download: " + e.message);
+        }
+      }
+
+      function saveToStorage() {
+        var track = currentTrackObject || displayedTracks[currentTrackIndex] || allTracks[0];
+        if (!track) return;
+        toggleLoading(true, 'Downloading File...');
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', track.url, true);
+        xhr.responseType = 'blob';
+        xhr.onload = function () {
+          toggleLoading(false);
+          var blob = xhr.response;
+          var fileName = track.title.replace(/\s+/g, '_') + '.ogg';
+          saveBlobToStorage(blob, fileName, "Audio saved to Music Storage!");
+        };
+        xhr.onerror = function () {
+          toggleLoading(false);
+          alert("Download failed.");
+        };
+        xhr.send();
+      }
+
+      function setAsRingtone(blobData) {
+        var track = currentTrackObject || displayedTracks[currentTrackIndex] || allTracks[0];
+        if (!track) return;
+        try {
+          if (window.MozActivity) {
+            new MozActivity({
+              name: "setringtone",
+              data: { type: "audio/*", blob: blobData || AudioEngine.audio.src }
+            });
+          } else {
+            alert("Ringtone Activity triggered (Available on KaiOS Devices).");
+          }
+        } catch (e) {
+          alert("Ringtone error: " + e.message);
+        }
+      }
+
+      function selectCustomWallpaper() {
+        try {
+          if (window.MozActivity) {
+            var pickActivity = new MozActivity({
+              name: "pick",
+              data: { type: ["image/png", "image/jpg", "image/jpeg", "image/*"] }
+            });
+            pickActivity.onsuccess = function () {
+              var blob = this.result.blob;
+              if (blob) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                  localStorage.setItem('kune_custom_bg', e.target.result);
+                  document.getElementById('bg-overlay').style.backgroundImage = 'url(' + e.target.result + ')';
+                  alert("Wallpaper set from KaiOS storage!");
+                };
+                reader.readAsDataURL(blob);
+              }
+            };
+          } else if (navigator.getDeviceStorage) {
+            toggleLoading(true, 'Reading storage...');
+            var picStorage = navigator.getDeviceStorage('pictures');
+            var cursor = picStorage.enumerate();
+            cursor.onsuccess = function () {
+              toggleLoading(false);
+              var file = this.result;
+              if (file) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                  localStorage.setItem('kune_custom_bg', e.target.result);
+                  document.getElementById('bg-overlay').style.backgroundImage = 'url(' + e.target.result + ')';
+                  alert("Wallpaper applied from device pictures!");
+                };
+                reader.readAsDataURL(file);
+              } else {
+                alert("No pictures found in device storage.");
+              }
+            };
+            cursor.onerror = function () {
+              toggleLoading(false);
+              alert("Device storage access denied or failed.");
+            };
+          } else {
+            var fileInput = document.getElementById('bg-file-picker');
+            fileInput.onchange = function (e) {
+              if (e.target.files && e.target.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (ev) {
+                  localStorage.setItem('kune_custom_bg', ev.target.result);
+                  document.getElementById('bg-overlay').style.backgroundImage = 'url(' + ev.target.result + ')';
+                  alert("Wallpaper set successfully!");
+                };
+                reader.readAsDataURL(e.target.files[0]);
+              }
+            };
+            fileInput.click();
+          }
+        } catch (err) {
+          toggleLoading(false);
+          alert("Storage Error: " + err.message);
+        }
+      }
+
+      function clearCustomWallpaper() {
+        localStorage.removeItem('kune_custom_bg');
+        document.getElementById('bg-overlay').style.backgroundImage = 'none';
+        alert("Wallpaper reset to default theme.");
+      }
+
+      function toggleShuffle() {
+        isShuffle = !isShuffle;
+        var val = isShuffle ? 'ON' : 'OFF';
+        var badge = document.getElementById('badge-shuffle');
+        if (badge) badge.innerText = 'SHUF: ' + val;
+        var valEl = document.getElementById('val-shuffle');
+        if (valEl) valEl.innerText = val;
+      }
+
+      function toggleRepeat() {
+        var modes = ['all', 'one', 'off'];
+        var idx = (modes.indexOf(repeatMode) + 1) % modes.length;
+        repeatMode = modes[idx];
+        var badge = document.getElementById('badge-repeat');
+        if (badge) badge.innerText = 'REP: ' + repeatMode.toUpperCase();
+        var pBadge = document.getElementById('player-rep-badge');
+        if (pBadge) pBadge.innerText = 'Repeat: ' + repeatMode.toUpperCase();
+        var valEl = document.getElementById('val-repeat');
+        if (valEl) valEl.innerText = repeatMode.toUpperCase();
+      }
+
+      function switchView(viewId, isBack) {
+        if (!isBack && currentView !== viewId) {
+          viewHistory.push(currentView);
+        }
+
+        var views = document.querySelectorAll('.view');
+        for (var i = 0; i < views.length; i++) {
+          views[i].classList.remove('active');
+        }
+        document.getElementById(viewId).classList.add('active');
+        currentView = viewId;
+        focusedIndex = 0;
+        updateFocus();
+
+        if (viewId === 'view-player') {
+          setTimeout(function() { AudioEngine.resizeCanvas(); }, 100);
+        } else if (viewId === 'view-cutter') {
+          setupCutterScreen();
+        }
+      }
+
+      function goBack() {
+        if (viewHistory.length > 0) {
+          var prev = viewHistory.pop();
+          switchView(prev, true);
+        } else {
+          if (confirm("Exit KaiTune Pro?")) window.close();
+        }
+      }
+
+      function executeMenuCommand(cmd) {
+        toggleJ2meMenu(false);
+        var activeFocusedTrack = (currentView === 'view-list' && focusedIndex > 0) ? displayedTracks[focusedIndex - 1] : currentTrackObject;
+
+        switch (cmd) {
+          case 'search_all':
+            openCategory('all', 'All Tracks');
+            focusedIndex = 0;
+            updateFocus();
+            break;
+
+          case 'open_favorites':
+            openCategory('favorites', 'My Favorites');
+            break;
+
+          case 'play_selected':
+            var trackIdx = focusedIndex - 1;
+            switchView('view-player');
+            playTrackByIndex(trackIdx);
+            break;
+
+          case 'add_queue':
+            addToQueue(activeFocusedTrack);
+            break;
+
+          case 'toggle_fav':
+            toggleFavorite(activeFocusedTrack);
+            break;
+
+          case 'nowplaying':
+            switchView('view-player');
+            break;
+
+          case 'shuffle':
+            toggleShuffle();
+            break;
+
+          case 'repeat':
+            toggleRepeat();
+            break;
+
+          case 'cutter':
+            if (currentView === 'view-list' && focusedIndex > 0) {
+              currentTrackIndex = focusedIndex - 1;
+              currentTrackObject = displayedTracks[currentTrackIndex];
+            }
+            switchView('view-cutter');
+            break;
+
+          case 'export_cut':
+            toggleLoading(true, 'Encoding and exporting WAV...');
+            var activeCutTrack = currentTrackObject || displayedTracks[currentTrackIndex] || allTracks[0];
+            AudioCutter.trimAudio(activeCutTrack.url, function (wavBlob) {
+              toggleLoading(false);
+              if (wavBlob) {
+                var fileName = activeCutTrack.title.replace(/\s+/g, '_') + '_trim.wav';
+                saveBlobToStorage(wavBlob, fileName, "Trimmed WAV exported successfully!");
+              }
+            });
+            break;
+
+          case 'ringtone_trimmed':
+            toggleLoading(true, 'Preparing ringtone...');
+            var activeRingTrack = currentTrackObject || displayedTracks[currentTrackIndex] || allTracks[0];
+            AudioCutter.trimAudio(activeRingTrack.url, function (wavBlob) {
+              toggleLoading(false);
+              if (wavBlob) {
+                setAsRingtone(wavBlob);
+              }
+            });
+            break;
+
+          case 'play_preview_range':
+            AudioCutter.setIsPreviewing(true);
+            AudioEngine.audio.currentTime = AudioCutter.getStart();
+            AudioEngine.audio.play().then(function() {
+              isPlaying = true;
+              updateSoftkeys();
+              updateCutterTimelineUI();
+            }).catch(function(e) {
+              console.warn("Playback error:", e);
+            });
+            break;
+
+          case 'reset_cutter':
+            var dur = AudioEngine.audio.duration || 30;
+            AudioCutter.setStart(0);
+            AudioCutter.setEnd(dur);
+            document.getElementById('cut-start-val').innerText = '0.0s';
+            document.getElementById('cut-end-val').innerText = dur.toFixed(1) + 's';
+            document.getElementById('cut-duration-val').innerText = dur.toFixed(1) + 's';
+            updateCutterTimelineUI();
+            break;
+
+          case 'reset_eq':
+            bassLevel = 0;
+            trebleLevel = 0;
+            currentSpeed = 1.0;
+            AudioEngine.setBass(0);
+            AudioEngine.setTreble(0);
+            AudioEngine.setSpeed(1.0);
+            document.getElementById('val-bass').innerText = '+0 dB';
+            document.getElementById('val-treble').innerText = '+0 dB';
+            document.getElementById('val-speed').innerText = '1.0x';
+            alert("Equalizer reset to defaults.");
+            break;
+
+          case 'toggle_theme':
+            themeIndex = (themeIndex + 1) % themes.length;
+            AudioEngine.setTheme(themes[themeIndex]);
+            document.getElementById('val-theme').innerText = themes[themeIndex].toUpperCase();
+            break;
+
+          case 'ringtone':
+            setAsRingtone();
+            break;
+
+          case 'storage':
+            saveToStorage();
+            break;
+
+          case 'wallpaper':
+            selectCustomWallpaper();
+            break;
+
+          case 'clear_wallpaper':
+            clearCustomWallpaper();
+            break;
+
+          case 'settings':
+            switchView('view-settings');
+            break;
+
+          case 'help':
+            switchView('view-help');
+            break;
+
+          case 'about':
+            switchView('view-about');
+            break;
+
+          case 'exit':
+            if (confirm("Exit KaiTune Pro?")) window.close();
+            break;
+        }
+      }
+
+      /* ==========================================================
+         ACTION DISPATCHERS (SOFTKEYS)
+         ========================================================== */
+      function handleLeftAction() {
+        if (isMenuOpen) {
+          var menuItems = document.querySelectorAll('#j2me-menu-list .j2me-item');
+          if (menuItems[menuFocusedIndex]) {
+            executeMenuCommand(menuItems[menuFocusedIndex].getAttribute('data-cmd'));
+          }
+        } else {
+          toggleJ2meMenu(true);
+        }
+      }
+
+      function handleCenterAction() {
+        if (isMenuOpen) {
+          var menuItems = document.querySelectorAll('#j2me-menu-list .j2me-item');
+          if (menuItems[menuFocusedIndex]) {
+            executeMenuCommand(menuItems[menuFocusedIndex].getAttribute('data-cmd'));
+          }
+        } else if (currentView === 'view-categories') {
+          var catItems = document.querySelectorAll('#category-list .nav-item');
+          var selectedCat = catItems[focusedIndex];
+          if (selectedCat) {
+            openCategory(selectedCat.getAttribute('data-cat'), selectedCat.querySelector('.title').innerText);
+          }
+        } else if (currentView === 'view-list') {
+          if (focusedIndex === 0) {
+            document.getElementById('search-input').focus();
+          } else {
+            var trackIdx = focusedIndex - 1;
+            switchView('view-player');
+            playTrackByIndex(trackIdx);
+          }
+        } else if (currentView === 'view-player' || currentView === 'view-cutter') {
+          AudioEngine.init();
+          if (isPlaying) {
+            AudioEngine.audio.pause();
+            isPlaying = false;
+          } else {
+            AudioEngine.audio.play();
+            isPlaying = true;
+          }
+          updateSoftkeys();
+          if (currentView === 'view-cutter') updateCutterTimelineUI();
+        } else if (currentView === 'view-settings') {
+          var sItems = document.querySelectorAll('#settings-list .nav-item');
+          if (sItems[focusedIndex]) {
+            handleSettingsAction(sItems[focusedIndex].getAttribute('data-action'));
+          }
+        }
+      }
+
+      function handleRightAction() {
+        if (isMenuOpen) {
+          toggleJ2meMenu(false);
+        } else {
+          goBack();
+        }
+      }
+
+      function handleSettingsAction(action) {
+        if (action === 'bass') {
+          bassLevel = (bassLevel + 3) % 15;
+          AudioEngine.setBass(bassLevel);
+          document.getElementById('val-bass').innerText = '+' + bassLevel + ' dB';
+        } else if (action === 'treble') {
+          trebleLevel = (trebleLevel + 3) % 15;
+          AudioEngine.setTreble(trebleLevel);
+          document.getElementById('val-treble').innerText = '+' + trebleLevel + ' dB';
+        } else if (action === 'speed') {
+          var idx = (speeds.indexOf(currentSpeed) + 1) % speeds.length;
+          currentSpeed = speeds[idx];
+          AudioEngine.setSpeed(currentSpeed);
+          document.getElementById('val-speed').innerText = currentSpeed + 'x';
+          document.getElementById('player-speed-badge').innerText = 'Speed: ' + currentSpeed + 'x';
+        } else if (action === 'theme') {
+          themeIndex = (themeIndex + 1) % themes.length;
+          AudioEngine.setTheme(themes[themeIndex]);
+          document.getElementById('val-theme').innerText = themes[themeIndex].toUpperCase();
+        } else if (action === 'toggle-shuffle') {
+          toggleShuffle();
+        } else if (action === 'toggle-repeat') {
+          toggleRepeat();
+        } else if (action === 'custom-bg') {
+          selectCustomWallpaper();
+        } else if (action === 'clear-bg') {
+          clearCustomWallpaper();
+        }
+      }
+
+      // Softkey Click Listeners
+      document.getElementById('softkey-left').addEventListener('click', handleLeftAction);
+      document.getElementById('softkey-center').addEventListener('click', handleCenterAction);
+      document.getElementById('softkey-right').addEventListener('click', handleRightAction);
+
+      /* ==========================================================
+         HARDWARE KEYPAD & D-PAD EVENT LISTENER
+         ========================================================== */
+      window.addEventListener('keydown', function (e) {
+        var key = e.key;
+
+        // In-Menu Keypad Control
+        if (isMenuOpen) {
+          var menuItems = document.querySelectorAll('#j2me-menu-list .j2me-item');
+          if (key === 'ArrowDown') {
+            if (menuFocusedIndex < menuItems.length - 1) {
+              menuFocusedIndex++;
+              updateMenuFocus();
+            }
+          } else if (key === 'ArrowUp') {
+            if (menuFocusedIndex > 0) {
+              menuFocusedIndex--;
+              updateMenuFocus();
+            }
+          } else if (key === 'Enter' || key === 'Select' || key === 'SoftLeft' || key === 'F1' || key === 'Escape') {
+            if (menuItems[menuFocusedIndex]) {
+              executeMenuCommand(menuItems[menuFocusedIndex].getAttribute('data-cmd'));
+            }
+          } else if (key === 'SoftRight' || key === 'F2' || key === 'Backspace') {
+            e.preventDefault();
+            toggleJ2meMenu(false);
+          } else if (/^[0-9]$/.test(key)) {
+            for (var m = 0; m < currentMenuOptions.length; m++) {
+              if (currentMenuOptions[m].key === key) {
+                executeMenuCommand(currentMenuOptions[m].cmd);
+                break;
+              }
+            }
+          }
+          return;
+        }
+
+        // Search Input Active Safe Guard
+        var isSearchActive = (document.activeElement === document.getElementById('search-input'));
+
+        if (!isSearchActive) {
+          switch (key) {
+            case '1':
+              if (currentView === 'view-list') {
+                focusedIndex = 0;
+                updateFocus();
+              }
+              break;
+            case '2': toggleShuffle(); break;
+            case '3': toggleRepeat(); break;
+            case '4': saveToStorage(); break;
+            case '5':
+              if (currentView === 'view-list' && focusedIndex > 0) {
+                addToQueue(displayedTracks[focusedIndex - 1]);
+              }
+              break;
+            case '0':
+              if (confirm("Exit KaiTune Pro?")) window.close();
+              break;
+
+            // [*] SET START POINT AT CURRENT RED PLAYHEAD POSITION
+            case '*':
+              if (currentView === 'view-cutter') {
+                var curTime = AudioEngine.audio.currentTime || 0;
+                AudioCutter.setStart(curTime);
+                document.getElementById('cut-start-val').innerText = curTime.toFixed(1) + 's';
+                var clipDur = Math.max(0.1, AudioCutter.getEnd() - AudioCutter.getStart());
+                document.getElementById('cut-duration-val').innerText = clipDur.toFixed(1) + 's';
+                updateCutterTimelineUI();
+              }
+              break;
+
+            // [#] SET END POINT AT CURRENT RED PLAYHEAD POSITION
+            case '#':
+              if (currentView === 'view-cutter') {
+                var curTimeEnd = AudioEngine.audio.currentTime || (AudioCutter.getStart() + 5);
+                AudioCutter.setEnd(curTimeEnd);
+                document.getElementById('cut-end-val').innerText = curTimeEnd.toFixed(1) + 's';
+                var clipDur2 = Math.max(0.1, AudioCutter.getEnd() - AudioCutter.getStart());
+                document.getElementById('cut-duration-val').innerText = clipDur2.toFixed(1) + 's';
+                updateCutterTimelineUI();
+              }
+              break;
+          }
+        }
+
+        var items = document.querySelectorAll('#' + currentView + ' .focusable');
+
+        switch (key) {
+          case 'ArrowDown':
+            if (isSearchActive) {
+              document.getElementById('search-input').blur();
+            }
+            if (focusedIndex < items.length - 1) {
+              focusedIndex++;
+              updateFocus();
+            }
+            break;
+
+          case 'ArrowUp':
+            if (focusedIndex > 0) {
+              focusedIndex--;
+              updateFocus();
+            }
+            break;
+
+          case 'ArrowRight':
+            if (currentView === 'view-player') {
+              AudioEngine.audio.currentTime += 5;
+            } else if (currentView === 'view-cutter') {
+              AudioEngine.audio.currentTime = Math.min(AudioEngine.audio.duration || 30, AudioEngine.audio.currentTime + 2);
+              updateCutterTimelineUI();
+            }
+            break;
+
+          case 'ArrowLeft':
+            if (currentView === 'view-player') {
+              AudioEngine.audio.currentTime = Math.max(0, AudioEngine.audio.currentTime - 5);
+            } else if (currentView === 'view-cutter') {
+              AudioEngine.audio.currentTime = Math.max(0, AudioEngine.audio.currentTime - 2);
+              updateCutterTimelineUI();
+            }
+            break;
+
+          case 'Enter':
+          case 'Select':
+            handleCenterAction();
+            break;
+
+          // ESCAPE KEY STRICTLY WORKS AS SOFTLEFT (OPTIONS / LEFT ACTION)
+          case 'Escape':
+          case 'SoftLeft':
+          case 'F1':
+            e.preventDefault();
+            handleLeftAction();
+            break;
+
+          // RIGHT SOFTKEY (BACK / EXIT)
+          case 'SoftRight':
+          case 'F2':
+          case 'Backspace':
+            e.preventDefault();
+            handleRightAction();
+            break;
+        }
+      });
+
+      // Live Search Filter Handler
+      document.getElementById('search-input').addEventListener('input', function (e) {
+        var query = e.target.value.toLowerCase().trim();
+        var baseList = (currentCategory === 'all') ? allTracks :
+                       (currentCategory === 'favorites') ? allTracks.filter(function(t){ return favorites.indexOf(t.id) !== -1; }) :
+                       allTracks.filter(function(t) { return t.category === currentCategory; });
+
+        if (query === '') {
+          displayedTracks = baseList.slice();
+        } else {
+          displayedTracks = baseList.filter(function (t) {
+            return t.title.toLowerCase().indexOf(query) !== -1 || t.artist.toLowerCase().indexOf(query) !== -1;
+          });
+        }
+        renderTrackList(displayedTracks);
+      });
+
+      // Settings List Click Handlers
+      var settingItems = document.querySelectorAll('#settings-list .nav-item');
+      for (var s = 0; s < settingItems.length; s++) {
+        (function (el) {
+          el.addEventListener('click', function () {
+            handleSettingsAction(el.getAttribute('data-action'));
+          });
+        })(settingItems[s]);
+      }
+
+      // Progress Bar Click Seeking (Player View)
+      document.getElementById('progress-bar-container').addEventListener('click', function (e) {
+        var rect = this.getBoundingClientRect();
+        var clickPos = (e.clientX - rect.left) / rect.width;
+        if (AudioEngine.audio.duration) {
+          AudioEngine.audio.currentTime = clickPos * AudioEngine.audio.duration;
+        }
+      });
+
+      // Timeline Track Click Seeking (Cutter View)
+      document.getElementById('cutter-timeline-container').addEventListener('click', function (e) {
+        var rect = this.getBoundingClientRect();
+        var clickPos = (e.clientX - rect.left) / rect.width;
+        var dur = AudioEngine.audio.duration || 30;
+        AudioEngine.audio.currentTime = clickPos * dur;
+        updateCutterTimelineUI();
+      });
+
+      // Category Click Handlers
+      var catElements = document.querySelectorAll('#category-list .nav-item');
+      for (var c = 0; c < catElements.length; c++) {
+        (function (el, idx) {
+          el.addEventListener('click', function () {
+            focusedIndex = idx;
+            updateFocus();
+            openCategory(el.getAttribute('data-cat'), el.querySelector('.title').innerText);
+          });
+        })(catElements[c], c);
+      }
+
+      // Initialize App on Categories View
+      switchView('view-categories');
+    });
+  </script>
+</body>
+</html>
