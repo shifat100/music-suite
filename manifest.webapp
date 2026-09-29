@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "name": "KaiTune Pro",
+  "description": "Advanced Music Player & Ringtone Cutter for KaiOS",
+  "launch_path": "/index.html",
+  "type": "privileged",
+  "icons": {
+    "56": "/icons/icon-56.png",
+    "112": "/icons/icon-112.png",
+    "128": "/icons/icon-128.png"
+  },
+  "developer": {
+    "name": "Your Name / Organization",
+    "url": "https://github.com/your-username"
+  },
+  "permissions": {
+    "device-storage:music": {
+      "description": "Required to load and save offline audio files",
+      "access": "readwrite"
+    },
+    "device-storage:pictures": {
+      "description": "Required to set custom wallpapers",
+      "access": "readonly"
+    },
+    "device-storage:sdcard": {
+      "description": "Required for external storage access",
+      "access": "readwrite"
+    },
+    "audio-channel-content": {
+      "description": "Allows background music playback"
+    }
+  },
+  "locales": {
+    "en-US": {
+      "name": "KaiTune Pro",
+      "subtitle": "Music & Ringtone Suite",
+      "description": "Full-featured audio player, 3-band EQ, and precision ringtone trimmer for KaiOS."
+    }
+  },
+  "default_locale": "en-US",
+  "cursor": false
+}
