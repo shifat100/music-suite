@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "id": "mus_01",
+    "title": "Midnight Chill Lo-Fi",
+    "artist": "Aero Sound",
+    "category": "music",
+    "url": "https://actions.google.com/sounds/v1/ambiences/outdoor_market.ogg"
+  },
+  {
+    "id": "mus_02",
+    "title": "Acoustic Sunset Melody",
+    "artist": "Guitar Vibes",
+    "category": "music",
+    "url": "https://actions.google.com/sounds/v1/weather/light_rain.ogg"
+  },
+  {
+    "id": "mus_03",
+    "title": "Cyber Synthwave Drive",
+    "artist": "Neon Wave",
+    "category": "music",
+    "url": "track1.mp3"
+  },
+  {
+    "id": "mus_04",
+    "title": "Deep Bass Groove",
+    "artist": "Pulse Lab",
+    "category": "music",
+    "url": "track2.mp3"
+  }
+]
