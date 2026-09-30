@@ -7,7 +7,7 @@
   <style>
     :root {
       --bg: #030712;
-      --card-bg: rgba(15, 23, 42, 0.8);
+      --card-bg: rgba(15, 23, 42, 0.85);
       --border: rgba(0, 210, 255, 0.25);
       --primary: #00d2ff;
       --primary-dark: #0284c7;
@@ -111,8 +111,9 @@
     .preset-btns {
       display: flex;
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 12px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .btn {
@@ -146,6 +147,11 @@
       box-shadow: none;
     }
 
+    .btn-accent {
+      background: #059669;
+      border-color: #10b981;
+    }
+
     .btn-danger {
       background: #e11d48;
       border-color: #f43f5e;
@@ -153,7 +159,6 @@
       font-size: 11px;
     }
 
-    /* Table styles */
     .table-wrap {
       max-height: 350px;
       overflow-y: auto;
@@ -189,7 +194,6 @@
       font-size: 11.5px;
     }
 
-    /* JSON Output Viewer */
     pre {
       background: #020617;
       border: 1px solid #1e293b;
@@ -203,7 +207,6 @@
       word-wrap: break-word;
     }
 
-    /* Toast */
     #toast {
       position: fixed;
       bottom: 20px;
@@ -267,14 +270,24 @@
             <option value="raw_github">Raw GitHub Usercontent URL</option>
           </select>
         </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>GitHub Token (Optional - Increases rate limit to 5000/hr)</label>
+          <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx (Leave empty to use automatic fallback)">
+        </div>
       </div>
 
-      <!-- Quick Preset Buttons -->
+      <!-- Quick Preset Buttons & Local Upload -->
       <div class="preset-btns">
         <button class="btn" id="btn-fetch">&#128269; Scan GitHub Folder</button>
         <button class="btn btn-secondary" onclick="applyPreset('audio/music', 'music')">Preset: Music</button>
         <button class="btn btn-secondary" onclick="applyPreset('audio/viral', 'viral')">Preset: Viral</button>
         <button class="btn btn-secondary" onclick="applyPreset('audio/ringtones', 'ringtones')">Preset: Ringtones</button>
+        
+        <!-- Local fallback without any API usage -->
+        <label class="btn btn-accent" style="margin-left:auto; cursor:pointer;">
+          📁 Scan Local Folder
+          <input type="file" id="local-folder" webkitdirectory directory multiple class="hidden">
+        </label>
       </div>
     </div>
 
@@ -289,11 +302,11 @@
         <table>
           <thead>
             <tr>
-              <th style="width: 15%;">ID</th>
+              <th style="width: 18%;">ID</th>
               <th style="width: 25%;">Title</th>
               <th style="width: 20%;">Artist</th>
-              <th style="width: 15%;">Category</th>
-              <th style="width: 20%;">URL</th>
+              <th style="width: 14%;">Category</th>
+              <th style="width: 18%;">URL</th>
               <th style="width: 5%;">Del</th>
             </tr>
           </thead>
@@ -319,12 +332,13 @@
 
   <script>
     var tracks = [];
+    var audioExtRegex = /\.(mp3|ogg|wav|m4a|aac|flac)$/i;
 
     function showToast(msg) {
       var t = document.getElementById('toast');
       t.innerText = msg;
       t.style.display = 'block';
-      setTimeout(function() { t.style.display = 'none'; }, 2500);
+      setTimeout(function() { t.style.display = 'none'; }, 3000);
     }
 
     function applyPreset(path, cat) {
@@ -333,9 +347,8 @@
       showToast('Applied preset for ' + path);
     }
 
-    // Smart file parser: "Artist - Title.mp3" -> { artist: "Artist", title: "Title" }
     function parseFileName(fileName) {
-      var clean = fileName.replace(/\.[^/.]+$/, ""); // Remove extension
+      var clean = fileName.replace(/\.[^/.]+$/, "");
       clean = decodeURIComponent(clean).replace(/_/g, " ").trim();
 
       var artist = "";
@@ -353,19 +366,85 @@
       };
     }
 
-    function formatUrl(item, owner, repo, branch, folderPath, format) {
-      var fileName = item.name;
+    function formatUrl(fileName, owner, repo, branch, folderPath, format) {
       var cleanFolder = folderPath.replace(/^\/+|\/+$/g, '');
 
       if (format === 'relative_filename') {
         return fileName;
       } else if (format === 'relative_path') {
-        return cleanFolder + '/' + fileName;
+        return cleanFolder ? cleanFolder + '/' + fileName : fileName;
       } else if (format === 'github_pages') {
-        return 'https://' + owner + '.github.io/' + (repo === owner + '.github.io' ? '' : repo + '/') + cleanFolder + '/' + fileName;
+        return 'https://' + owner + '.github.io/' + (repo.toLowerCase() === (owner + '.github.io').toLowerCase() ? '' : repo + '/') + (cleanFolder ? cleanFolder + '/' : '') + fileName;
       } else {
-        return 'https://raw.githubusercontent.com/' + owner + '/' + repo + '/' + branch + '/' + cleanFolder + '/' + fileName;
+        return 'https://raw.githubusercontent.com/' + owner + '/' + repo + '/' + branch + '/' + (cleanFolder ? cleanFolder + '/' : '') + fileName;
       }
+    }
+
+    function processAudioList(fileNames, owner, repo, branch, path, defCategory, urlFormat) {
+      var audioNames = fileNames.filter(function (name) {
+        return audioExtRegex.test(name);
+      });
+
+      if (audioNames.length === 0) {
+        alert("No audio files (.mp3, .ogg, .wav, etc.) detected in this folder.");
+        return;
+      }
+
+      tracks = audioNames.map(function (fileName, idx) {
+        var meta = parseFileName(fileName);
+        var id = defCategory + '_' + (idx + 1) + '_' + meta.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        return {
+          id: id,
+          title: meta.title,
+          artist: meta.artist,
+          category: defCategory,
+          url: formatUrl(fileName, owner, repo, branch, path, urlFormat)
+        };
+      });
+
+      renderTable();
+      updateJsonOutput();
+      document.getElementById('card-editor').classList.remove('hidden');
+      document.getElementById('card-export').classList.remove('hidden');
+      showToast("Found " + tracks.length + " audio tracks!");
+    }
+
+    // Fallback scanner via jsDelivr Data API (No rate limit)
+    function fetchFromJsDelivr(owner, repo, branch, path, defCategory, urlFormat) {
+      showToast("GitHub Rate limited: Trying CDN fallback...");
+      var cdnApi = 'https://data.jsdelivr.com/v1/packages/gh/' + owner + '/' + repo + '@' + branch + '/flat';
+
+      fetch(cdnApi)
+        .then(function(res) {
+          if (!res.ok) throw new Error("Could not find repository files via CDN fallback.");
+          return res.json();
+        })
+        .then(function(data) {
+          var cleanPath = path.replace(/^\/+|\/+$/g, '').toLowerCase();
+          var matchedFiles = [];
+
+          if (data && Array.isArray(data.files)) {
+            data.files.forEach(function(f) {
+              var relativeName = f.name.replace(/^\//, '');
+              var dirName = relativeName.substring(0, relativeName.lastIndexOf('/')).toLowerCase();
+              var fileName = relativeName.split('/').pop();
+
+              if (!cleanPath || dirName === cleanPath || relativeName.toLowerCase().startsWith(cleanPath + '/')) {
+                matchedFiles.push(fileName);
+              }
+            });
+          }
+
+          if (matchedFiles.length === 0) {
+            throw new Error("No matching audio files found at path: " + path);
+          }
+
+          processAudioList(matchedFiles, owner, repo, branch, path, defCategory, urlFormat);
+          showToast("Loaded tracks via CDN (Bypassed rate limit)!");
+        })
+        .catch(function(err) {
+          alert("Scan Failed: " + err.message + "\n\nTip: You can provide a GitHub Personal Access Token or use the 'Scan Local Folder' button.");
+        });
     }
 
     document.getElementById('btn-fetch').addEventListener('click', function () {
@@ -373,62 +452,66 @@
       var repo = document.getElementById('gh-repo').value.trim();
       var branch = document.getElementById('gh-branch').value.trim() || 'main';
       var path = document.getElementById('gh-path').value.trim();
+      var token = document.getElementById('gh-token').value.trim();
       var defCategory = document.getElementById('default-category').value;
       var urlFormat = document.getElementById('url-format').value;
 
-      if (!owner || !repo || !path) {
-        alert("Please enter Owner, Repository, and Folder Path.");
+      if (!owner || !repo) {
+        alert("Please enter Owner and Repository.");
         return;
       }
 
       var apiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path + '?ref=' + branch;
-      
+      var headers = {};
+      if (token) {
+        headers['Authorization'] = 'token ' + token;
+      }
+
       showToast("Scanning GitHub folder...");
 
-      fetch(apiUrl)
+      fetch(apiUrl, { headers: headers })
         .then(function (res) {
+          if (res.status === 403 || res.status === 429) {
+            // API Rate Limit Hit -> Switch to CDN fallback
+            fetchFromJsDelivr(owner, repo, branch, path, defCategory, urlFormat);
+            return null;
+          }
           if (!res.ok) {
             throw new Error("GitHub API Error: " + res.status + " " + res.statusText);
           }
           return res.json();
         })
         .then(function (data) {
+          if (!data) return; // Handled by fallback
+
           if (!Array.isArray(data)) {
-            alert("No files found or specified path is not a folder.");
+            alert("Specified path is not a folder or repository is empty.");
             return;
           }
 
-          var audioExtRegex = /\.(mp3|ogg|wav|m4a|aac|flac)$/i;
-          var audioFiles = data.filter(function (f) {
-            return f.type === 'file' && audioExtRegex.test(f.name);
-          });
-
-          if (audioFiles.length === 0) {
-            alert("No audio files (.mp3, .ogg, .wav, etc.) detected in this folder.");
-            return;
-          }
-
-          tracks = audioFiles.map(function (file, idx) {
-            var meta = parseFileName(file.name);
-            var id = defCategory + '_' + (idx + 1) + '_' + meta.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
-            return {
-              id: id,
-              title: meta.title,
-              artist: meta.artist,
-              category: defCategory,
-              url: formatUrl(file, owner, repo, branch, path, urlFormat)
-            };
-          });
-
-          renderTable();
-          updateJsonOutput();
-          document.getElementById('card-editor').classList.remove('hidden');
-          document.getElementById('card-export').classList.remove('hidden');
-          showToast("Found " + tracks.length + " audio tracks!");
+          var fileNames = data.filter(function(f) { return f.type === 'file'; }).map(function(f) { return f.name; });
+          processAudioList(fileNames, owner, repo, branch, path, defCategory, urlFormat);
         })
         .catch(function (err) {
-          alert("Failed to scan folder: " + err.message + "\n\nTip: If you hit GitHub API rate limits, wait a few minutes or check repository visibility.");
+          // If GitHub API completely fails, attempt fallback
+          fetchFromJsDelivr(owner, repo, branch, path, defCategory, urlFormat);
         });
+    });
+
+    // Local Folder Scan feature (Zero Network / No API limit)
+    document.getElementById('local-folder').addEventListener('change', function(e) {
+      var files = Array.from(e.target.files);
+      if (!files.length) return;
+
+      var owner = document.getElementById('gh-owner').value.trim();
+      var repo = document.getElementById('gh-repo').value.trim();
+      var branch = document.getElementById('gh-branch').value.trim() || 'main';
+      var path = document.getElementById('gh-path').value.trim();
+      var defCategory = document.getElementById('default-category').value;
+      var urlFormat = document.getElementById('url-format').value;
+
+      var fileNames = files.map(function(f) { return f.name; });
+      processAudioList(fileNames, owner, repo, branch, path, defCategory, urlFormat);
     });
 
     function renderTable() {
