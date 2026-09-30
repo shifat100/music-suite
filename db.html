@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KaiTune DB.json Generator Tool</title>
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: rgba(15, 23, 42, 0.8);
+      --border: rgba(0, 210, 255, 0.25);
+      --primary: #00d2ff;
+      --primary-dark: #0284c7;
+      --accent: #f43f5e;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #0f172a 0%, #060b13 60%, #020408 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 24px;
+      color: var(--primary);
+      text-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .grid-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, select {
+      background: #030712;
+      border: 1px solid #334155;
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(0, 210, 255, 0.3);
+    }
+
+    .preset-btns {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+      border: 1px solid #38bdf8;
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      box-shadow: 0 0 12px rgba(0, 210, 255, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #1e293b;
+      border-color: #334155;
+      color: #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+      background: #334155;
+      box-shadow: none;
+    }
+
+    .btn-danger {
+      background: #e11d48;
+      border-color: #f43f5e;
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+
+    /* Table styles */
+    .table-wrap {
+      max-height: 350px;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    th {
+      background: #0f172a;
+      padding: 8px;
+      color: #38bdf8;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    td {
+      padding: 6px 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    td input, td select {
+      width: 100%;
+      padding: 4px 6px;
+      font-size: 11.5px;
+    }
+
+    /* JSON Output Viewer */
+    pre {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12px;
+      color: #38bdf8;
+      max-height: 250px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0f172a;
+      border: 1px solid var(--primary);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 210, 255, 0.3);
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #fff;
+      display: none;
+      z-index: 1000;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>&#9835; KaiTune DB.json Generator</h1>
+      <p>Scan GitHub repository audio folders &amp; generate ready-to-use database JSON files</p>
+    </header>
+
+    <!-- GitHub Config Card -->
+    <div class="card">
+      <div class="card-title">1. GitHub Repository Configuration</div>
+      <div class="grid-form">
+        <div class="form-group">
+          <label>GitHub Username / Owner</label>
+          <input type="text" id="gh-owner" value="shifat100" placeholder="e.g. shifat100">
+        </div>
+        <div class="form-group">
+          <label>Repository Name</label>
+          <input type="text" id="gh-repo" value="shifat100.github.io" placeholder="e.g. shifat100.github.io">
+        </div>
+        <div class="form-group">
+          <label>Branch</label>
+          <input type="text" id="gh-branch" value="main" placeholder="main or master">
+        </div>
+        <div class="form-group">
+          <label>Folder Path to Scan</label>
+          <input type="text" id="gh-path" value="audio/music" placeholder="e.g. audio/music or audio/viral">
+        </div>
+        <div class="form-group">
+          <label>Default Category</label>
+          <select id="default-category">
+            <option value="music">music</option>
+            <option value="viral">viral</option>
+            <option value="ringtones">ringtones</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>URL Output Format</label>
+          <select id="url-format">
+            <option value="relative_filename">Filename Only (e.g. song.mp3)</option>
+            <option value="relative_path">Full Relative Path (e.g. audio/music/song.mp3)</option>
+            <option value="github_pages">GitHub Pages URL (https://owner.github.io/...)</option>
+            <option value="raw_github">Raw GitHub Usercontent URL</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Preset Buttons -->
+      <div class="preset-btns">
+        <button class="btn" id="btn-fetch">&#128269; Scan GitHub Folder</button>
+        <button class="btn btn-secondary" onclick="applyPreset('audio/music', 'music')">&#9835; Preset: Music</button>
+        <button class="btn btn-secondary" onclick="applyPreset('audio/viral', 'viral')">&#128293; Preset: Viral</button>
+        <button class="btn btn-secondary" onclick="applyPreset('audio/ringtones', 'ringtones')">&#128276; Preset: Ringtones</button>
+      </div>
+    </div>
+
+    <!-- Live Preview & Editor Card -->
+    <div class="card hidden" id="card-editor">
+      <div class="card-title">
+        <span>2. Detected Tracks (<span id="track-count">0</span>)</span>
+        <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" id="btn-add-row">+ Add Custom Track</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 15%;">ID</th>
+              <th style="width: 25%;">Title</th>
+              <th style="width: 20%;">Artist</th>
+              <th style="width: 15%;">Category</th>
+              <th style="width: 20%;">URL</th>
+              <th style="width: 5%;">Del</th>
+            </tr>
+          </thead>
+          <tbody id="track-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Export JSON Card -->
+    <div class="card hidden" id="card-export">
+      <div class="card-title">3. Export Generated db.json</div>
+      <pre><code id="json-output">[]</code></pre>
+      
+      <div class="preset-btns" style="margin-top: 14px;">
+        <button class="btn" id="btn-download">&#11015; Download db.json</button>
+        <button class="btn btn-secondary" id="btn-copy">&#128203; Copy to Clipboard</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast">Notification</div>
+
+  <script>
+    var tracks = [];
+
+    function showToast(msg) {
+      var t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(function() { t.style.display = 'none'; }, 2500);
+    }
+
+    function applyPreset(path, cat) {
+      document.getElementById('gh-path').value = path;
+      document.getElementById('default-category').value = cat;
+      showToast('Applied preset for ' + path);
+    }
+
+    // Smart file parser: "Artist - Title.mp3" -> { artist: "Artist", title: "Title" }
+    function parseFileName(fileName) {
+      var clean = fileName.replace(/\.[^/.]+$/, ""); // Remove extension
+      clean = decodeURIComponent(clean).replace(/_/g, " ").trim();
+
+      var artist = "";
+      var title = clean;
+
+      if (clean.indexOf(" - ") !== -1) {
+        var parts = clean.split(" - ");
+        artist = parts[0].trim();
+        title = parts.slice(1).join(" - ").trim();
+      }
+
+      return {
+        title: title || clean,
+        artist: artist || "Unknown Artist"
+      };
+    }
+
+    function formatUrl(item, owner, repo, branch, folderPath, format) {
+      var fileName = item.name;
+      var cleanFolder = folderPath.replace(/^\/+|\/+$/g, '');
+
+      if (format === 'relative_filename') {
+        return fileName;
+      } else if (format === 'relative_path') {
+        return cleanFolder + '/' + fileName;
+      } else if (format === 'github_pages') {
+        return 'https://' + owner + '.github.io/' + (repo === owner + '.github.io' ? '' : repo + '/') + cleanFolder + '/' + fileName;
+      } else {
+        return 'https://raw.githubusercontent.com/' + owner + '/' + repo + '/' + branch + '/' + cleanFolder + '/' + fileName;
+      }
+    }
+
+    document.getElementById('btn-fetch').addEventListener('click', function () {
+      var owner = document.getElementById('gh-owner').value.trim();
+      var repo = document.getElementById('gh-repo').value.trim();
+      var branch = document.getElementById('gh-branch').value.trim() || 'main';
+      var path = document.getElementById('gh-path').value.trim();
+      var defCategory = document.getElementById('default-category').value;
+      var urlFormat = document.getElementById('url-format').value;
+
+      if (!owner || !repo || !path) {
+        alert("Please enter Owner, Repository, and Folder Path.");
+        return;
+      }
+
+      var apiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path + '?ref=' + branch;
+      
+      showToast("Scanning GitHub folder...");
+
+      fetch(apiUrl)
+        .then(function (res) {
+          if (!res.ok) {
+            throw new Error("GitHub API Error: " + res.status + " " + res.statusText);
+          }
+          return res.json();
+        })
+        .then(function (data) {
+          if (!Array.isArray(data)) {
+            alert("No files found or specified path is not a folder.");
+            return;
+          }
+
+          var audioExtRegex = /\.(mp3|ogg|wav|m4a|aac|flac)$/i;
+          var audioFiles = data.filter(function (f) {
+            return f.type === 'file' && audioExtRegex.test(f.name);
+          });
+
+          if (audioFiles.length === 0) {
+            alert("No audio files (.mp3, .ogg, .wav, etc.) detected in this folder.");
+            return;
+          }
+
+          tracks = audioFiles.map(function (file, idx) {
+            var meta = parseFileName(file.name);
+            var id = defCategory + '_' + (idx + 1) + '_' + meta.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            return {
+              id: id,
+              title: meta.title,
+              artist: meta.artist,
+              category: defCategory,
+              url: formatUrl(file, owner, repo, branch, path, urlFormat)
+            };
+          });
+
+          renderTable();
+          updateJsonOutput();
+          document.getElementById('card-editor').classList.remove('hidden');
+          document.getElementById('card-export').classList.remove('hidden');
+          showToast("Found " + tracks.length + " audio tracks!");
+        })
+        .catch(function (err) {
+          alert("Failed to scan folder: " + err.message + "\n\nTip: If you hit GitHub API rate limits, wait a few minutes or check repository visibility.");
+        });
+    });
+
+    function renderTable() {
+      var tbody = document.getElementById('track-table-body');
+      tbody.innerHTML = '';
+      document.getElementById('track-count').innerText = tracks.length;
+
+      tracks.forEach(function (t, i) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = 
+          '<td><input type="text" value="' + t.id + '" onchange="updateTrack(' + i + ', \'id\', this.value)"></td>' +
+          '<td><input type="text" value="' + t.title + '" onchange="updateTrack(' + i + ', \'title\', this.value)"></td>' +
+          '<td><input type="text" value="' + t.artist + '" onchange="updateTrack(' + i + ', \'artist\', this.value)"></td>' +
+          '<td>' +
+            '<select onchange="updateTrack(' + i + ', \'category\', this.value)">' +
+              '<option value="music"' + (t.category === 'music' ? ' selected' : '') + '>music</option>' +
+              '<option value="viral"' + (t.category === 'viral' ? ' selected' : '') + '>viral</option>' +
+              '<option value="ringtones"' + (t.category === 'ringtones' ? ' selected' : '') + '>ringtones</option>' +
+            '</select>' +
+          '</td>' +
+          '<td><input type="text" value="' + t.url + '" onchange="updateTrack(' + i + ', \'url\', this.value)"></td>' +
+          '<td><button class="btn btn-danger" onclick="deleteTrack(' + i + ')">&times;</button></td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.updateTrack = function(index, field, value) {
+      if (tracks[index]) {
+        tracks[index][field] = value;
+        updateJsonOutput();
+      }
+    };
+
+    window.deleteTrack = function(index) {
+      tracks.splice(index, 1);
+      renderTable();
+      updateJsonOutput();
+      showToast("Track deleted.");
+    };
+
+    document.getElementById('btn-add-row').addEventListener('click', function () {
+      var defCategory = document.getElementById('default-category').value;
+      tracks.push({
+        id: defCategory + '_' + (tracks.length + 1),
+        title: "New Track " + (tracks.length + 1),
+        artist: "Artist Name",
+        category: defCategory,
+        url: "song.mp3"
+      });
+      renderTable();
+      updateJsonOutput();
+      showToast("Added new track row.");
+    });
+
+    function updateJsonOutput() {
+      var jsonStr = JSON.stringify(tracks, null, 2);
+      document.getElementById('json-output').innerText = jsonStr;
+    }
+
+    document.getElementById('btn-download').addEventListener('click', function () {
+      if (tracks.length === 0) return;
+      var jsonStr = JSON.stringify(tracks, null, 2);
+      var blob = new Blob([jsonStr], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = "db.json";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 300);
+      showToast("Downloaded db.json!");
+    });
+
+    document.getElementById('btn-copy').addEventListener('click', function () {
+      var jsonStr = JSON.stringify(tracks, null, 2);
+      navigator.clipboard.writeText(jsonStr).then(function () {
+        showToast("Copied db.json to clipboard!");
+      }).catch(function () {
+        alert("Clipboard copy failed. Please copy manually from the box.");
+      });
+    });
+  </script>
+</body>
+</html>
