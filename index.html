@@ -6,8 +6,24 @@
   <title>KaiTune Pro</title>
   <style>
     /* ==========================================================
-       1. GLOBAL RESET & FULLSCREEN RESPONSIVE LAYOUT
+       1. GLOBAL RESET & PRO COLOR PALETTE
        ========================================================== */
+    :root {
+      --bg-main: #030712;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --primary: #00d2ff;
+      --primary-dark: #0284c7;
+      --primary-glow: rgba(0, 210, 255, 0.4);
+      --accent-red: #f43f5e;
+      --accent-amber: #f59e0b;
+      --accent-green: #10b981;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-cyan: rgba(0, 210, 255, 0.25);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -21,8 +37,8 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #030712;
-      color: #f1f5f9;
+      background: var(--bg-main);
+      color: var(--text-main);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       font-size: 13px;
     }
@@ -33,7 +49,7 @@
       display: flex;
       flex-direction: column;
       position: relative;
-      background: linear-gradient(180deg, #0f172a 0%, #080d15 50%, #030710 100%);
+      background: radial-gradient(circle at top, #0f172a 0%, #060b13 60%, #020408 100%);
       overflow: hidden;
     }
 
@@ -45,18 +61,18 @@
       bottom: 0;
       background-size: cover;
       background-position: center;
-      opacity: 0.25;
+      opacity: 0.2;
       z-index: 0;
       pointer-events: none;
-      transition: background-image 0.3s ease;
+      transition: background-image 0.4s ease;
     }
 
     /* ==========================================================
-       2. HEADER & STATUS
+       2. HEADER & STATUS BAR
        ========================================================== */
     #header {
       flex-shrink: 0;
-      height: 36px;
+      height: 38px;
       background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
       display: flex;
       align-items: center;
@@ -64,19 +80,22 @@
       padding: 0 12px;
       font-weight: 700;
       font-size: 12px;
-      border-bottom: 1px solid rgba(0, 210, 255, 0.25);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      border-bottom: 1px solid var(--border-cyan);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
       z-index: 2;
     }
 
     .brand-glow {
-      color: #00d2ff;
-      text-shadow: 0 0 8px rgba(0, 210, 255, 0.5);
+      color: var(--primary);
+      text-shadow: 0 0 10px var(--primary-glow);
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     #header-category {
       font-size: 11px;
-      color: #94a3b8;
+      color: var(--text-muted);
       max-width: 50%;
       white-space: nowrap;
       overflow: hidden;
@@ -110,21 +129,23 @@
     }
 
     .nav-item {
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-      margin-bottom: 4px;
-      padding: 8px 10px;
-      border-radius: 4px;
+      background: var(--bg-card);
+      margin-bottom: 5px;
+      padding: 9px 11px;
+      border-radius: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
       cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
 
     .nav-item.focused, .search-box.focused {
       background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
       border: 1px solid #38bdf8 !important;
-      box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
+      box-shadow: 0 0 12px var(--primary-glow);
       color: #ffffff !important;
     }
 
@@ -144,7 +165,7 @@
 
     .nav-item .subtitle {
       font-size: 11px;
-      color: #94a3b8;
+      color: var(--text-muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -158,7 +179,7 @@
     .nav-item .val {
       font-size: 11px;
       font-weight: bold;
-      color: #00d2ff;
+      color: var(--primary);
     }
 
     .nav-item.focused .val {
@@ -167,8 +188,8 @@
 
     .search-box {
       margin-bottom: 8px;
-      padding: 3px 6px;
-      border-radius: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
       background: #090e17;
       border: 1px solid #1e293b;
       display: flex;
@@ -177,21 +198,13 @@
 
     .search-box input {
       width: 100%;
-      height: 26px;
+      height: 28px;
       background: transparent;
       border: none;
       color: #f8fafc;
       padding: 0 4px;
       font-size: 12px;
       outline: none;
-    }
-
-    .search-box.focused input {
-      color: #ffffff;
-    }
-
-    .search-box.focused input::placeholder {
-      color: #e0f2fe;
     }
 
     .status-badges {
@@ -205,7 +218,7 @@
     .badge {
       font-size: 10px;
       font-weight: 600;
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(15, 23, 42, 0.9);
       padding: 2px 8px;
       border-radius: 4px;
       color: #38bdf8;
@@ -213,8 +226,8 @@
     }
 
     .badge-queue {
-      color: #f59e0b;
-      border-color: rgba(245, 158, 11, 0.3);
+      color: var(--accent-amber);
+      border-color: rgba(245, 158, 11, 0.35);
     }
 
     /* ==========================================================
@@ -222,19 +235,19 @@
        ========================================================== */
     .visualizer-card {
       width: 100%;
-      background: #05080f;
-      border-radius: 6px;
+      background: #040711;
+      border-radius: 8px;
       padding: 6px;
-      border: 1px solid rgba(0, 210, 255, 0.2);
+      border: 1px solid var(--border-cyan);
       display: flex;
       justify-content: center;
       margin-bottom: 10px;
-      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.9);
+      box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.9);
     }
 
     #visualizer-canvas {
       width: 100%;
-      height: 100px;
+      height: 95px;
       display: block;
     }
 
@@ -253,7 +266,7 @@
 
     .player-meta p {
       font-size: 12px;
-      color: #94a3b8;
+      color: var(--text-muted);
       margin-top: 2px;
     }
 
@@ -268,7 +281,7 @@
       height: 8px;
       background: #090d16;
       border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       cursor: pointer;
     }
 
@@ -276,7 +289,7 @@
       position: relative;
       width: 0%;
       height: 100%;
-      background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+      background: linear-gradient(90deg, #00d2ff, #0284c7);
       border-radius: 4px;
     }
 
@@ -284,18 +297,18 @@
       display: flex;
       justify-content: space-between;
       font-size: 10px;
-      color: #94a3b8;
+      color: var(--text-muted);
       margin-top: 4px;
     }
 
     .info-card {
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-      border-radius: 6px;
+      background: var(--bg-card);
+      border-radius: 8px;
       padding: 10px 12px;
       line-height: 1.4;
       font-size: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
       margin-bottom: 8px;
     }
 
@@ -306,12 +319,12 @@
     }
 
     /* ==========================================================
-       4.1 ADVANCED AUDIO CUTTER TIMELINE
+       4.1 AUDIO CUTTER TIMELINE
        ========================================================== */
     .cutter-mini-player {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(0, 210, 255, 0.2);
-      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-cyan);
+      border-radius: 8px;
       padding: 8px;
       margin-bottom: 8px;
       text-align: center;
@@ -327,23 +340,22 @@
 
     .cutter-mini-player p {
       font-size: 11px;
-      color: #94a3b8;
+      color: var(--text-muted);
       margin-top: 2px;
     }
 
     .cutter-timeline-track {
       width: 100%;
-      height: 26px;
+      height: 28px;
       background: #030712;
       border: 1px solid #334155;
-      border-radius: 4px;
+      border-radius: 5px;
       margin: 10px 0 6px 0;
       position: relative;
       overflow: hidden;
       cursor: pointer;
     }
 
-    /* Shaded Trim Selection Range */
     .cutter-range-selection {
       position: absolute;
       top: 0;
@@ -351,21 +363,20 @@
       left: 0%;
       width: 40%;
       background: rgba(0, 210, 255, 0.25);
-      border-left: 2px solid #00d2ff;
-      border-right: 2px solid #f43f5e;
+      border-left: 2px solid var(--primary);
+      border-right: 2px solid var(--accent-red);
       z-index: 1;
       pointer-events: none;
     }
 
-    /* The Real-Time Red Playhead Line */
     #cutter-playhead-line {
       position: absolute;
       top: 0;
       bottom: 0;
       left: 0%;
       width: 2.5px;
-      background: #ef4444;
-      box-shadow: 0 0 8px #ef4444, 0 0 3px #ffffff;
+      background: var(--accent-red);
+      box-shadow: 0 0 8px var(--accent-red), 0 0 3px #ffffff;
       z-index: 3;
       pointer-events: none;
       transition: left 0.04s linear;
@@ -378,7 +389,7 @@
       left: -3px;
       width: 8px;
       height: 5px;
-      background: #ef4444;
+      background: var(--accent-red);
       border-radius: 0 0 2px 2px;
     }
 
@@ -392,12 +403,12 @@
 
     .cutter-guide-box {
       background: #060911;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 4px;
-      padding: 6px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 7px;
       margin-top: 6px;
       font-size: 10.5px;
-      color: #94a3b8;
+      color: var(--text-muted);
       text-align: center;
       line-height: 1.4;
     }
@@ -407,7 +418,242 @@
     }
 
     /* ==========================================================
-       5. OPTIONS MENU OVERLAY
+       4.2 SLIDEBOARD TUTORIAL IN HELP SCREEN
+       ========================================================== */
+    .slideboard-container {
+      width: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .slideboard-viewport {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      min-height: 220px;
+    }
+
+    .slideboard-wrapper {
+      display: flex;
+      width: 400%;
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .slide-item {
+      width: 25%;
+      padding: 12px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .slide-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .slide-icon {
+      font-size: 16px;
+      background: rgba(0, 210, 255, 0.15);
+      border: 1px solid var(--border-cyan);
+      border-radius: 6px;
+      padding: 4px 7px;
+      color: var(--primary);
+    }
+
+    .slide-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .slide-content {
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: #cbd5e1;
+    }
+
+    .slide-content p {
+      margin-bottom: 5px;
+    }
+
+    .slide-content b {
+      color: var(--primary);
+    }
+
+    .slideboard-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 8px;
+      padding: 0 4px;
+    }
+
+    .slide-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .slide-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .slide-dot.active {
+      width: 18px;
+      border-radius: 4px;
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary-glow);
+    }
+
+    .slide-indicator-label {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      font-weight: bold;
+    }
+
+    /* ==========================================================
+       5. CUSTOM UI: DIALOG MODALS (ALERT, CONFIRM, PROMPT)
+       ========================================================== */
+    #custom-dialog-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 36px;
+      background: rgba(2, 6, 23, 0.88);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    #custom-dialog-card {
+      width: 100%;
+      max-width: 280px;
+      background: linear-gradient(180deg, #111827 0%, #090e17 100%);
+      border: 1px solid var(--border-cyan);
+      border-radius: 8px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9), 0 0 15px rgba(0, 210, 255, 0.2);
+      overflow: hidden;
+      animation: dialogPop 0.2s ease-out;
+    }
+
+    @keyframes dialogPop {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .dialog-header {
+      background: #0f172a;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dialog-body {
+      padding: 12px;
+      font-size: 12px;
+      color: #e2e8f0;
+      line-height: 1.45;
+    }
+
+    #dialog-input-field {
+      width: 100%;
+      background: #030712;
+      border: 1px solid #334155;
+      color: #ffffff;
+      padding: 7px 9px;
+      border-radius: 4px;
+      margin-top: 8px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    #dialog-input-field:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px var(--primary-glow);
+    }
+
+    .dialog-footer {
+      padding: 8px 12px;
+      background: rgba(15, 23, 42, 0.6);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .dialog-btn {
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .dialog-btn-primary {
+      background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border-color: #38bdf8;
+    }
+
+    .dialog-btn-secondary {
+      background: #1e293b;
+      color: #94a3b8;
+      border-color: #334155;
+    }
+
+    /* Animated Toast Notification */
+    #custom-toast {
+      position: absolute;
+      top: 44px;
+      left: 10px;
+      right: 10px;
+      background: linear-gradient(180deg, #0f172a 0%, #090e17 100%);
+      border: 1px solid var(--primary);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), 0 0 10px var(--primary-glow);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 11.5px;
+      color: #ffffff;
+      text-align: center;
+      z-index: 600;
+      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      transform: translateY(-20px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #custom-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ==========================================================
+       6. OPTIONS MENU OVERLAY
        ========================================================== */
     #j2me-menu-overlay {
       position: absolute;
@@ -415,7 +661,8 @@
       left: 0;
       right: 0;
       bottom: 36px;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(2px);
       z-index: 100;
     }
 
@@ -426,21 +673,21 @@
       width: 100%;
       max-height: 80%;
       background: #090e17;
-      border-top: 2px solid #00d2ff;
+      border-top: 2px solid var(--primary);
       display: flex;
       flex-direction: column;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.95);
     }
 
     .j2me-header {
       background: #0f172a;
-      color: #00d2ff;
+      color: var(--primary);
       font-size: 11px;
       font-weight: bold;
-      padding: 6px 12px;
+      padding: 7px 12px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     #j2me-menu-list {
@@ -486,7 +733,7 @@
     }
 
     /* ==========================================================
-       6. SOFTKEY FOOTER BAR
+       7. SOFTKEY FOOTER BAR
        ========================================================== */
     #softkey-bar {
       flex-shrink: 0;
@@ -499,7 +746,7 @@
       font-size: 12px;
       font-weight: 600;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.8);
       z-index: 2;
     }
 
@@ -513,10 +760,10 @@
     }
 
     #softkey-center {
-      color: #00d2ff;
+      color: var(--primary);
       text-transform: uppercase;
       font-weight: bold;
-      text-shadow: 0 0 8px rgba(0, 210, 255, 0.6);
+      text-shadow: 0 0 8px var(--primary-glow);
       cursor: pointer;
     }
 
@@ -526,7 +773,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(3, 7, 18, 0.92);
+      background: rgba(3, 7, 18, 0.94);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -538,7 +785,7 @@
       width: 26px;
       height: 26px;
       border: 3px solid rgba(255, 255, 255, 0.15);
-      border-top-color: #00d2ff;
+      border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
       margin-bottom: 8px;
@@ -557,6 +804,28 @@
     <!-- Hidden file input for web fallback -->
     <input type="file" id="bg-file-picker" accept="image/*" style="display:none;">
 
+    <!-- Custom Toast Banner -->
+    <div id="custom-toast">Notification Message</div>
+
+    <!-- Custom Dialog Modal (Alert / Confirm / Prompt) -->
+    <div id="custom-dialog-backdrop" class="hidden">
+      <div id="custom-dialog-card">
+        <div class="dialog-header">
+          <span id="dialog-icon">&#9881;</span>
+          <span id="dialog-title">Notice</span>
+        </div>
+        <div class="dialog-body">
+          <div id="dialog-message">Message text goes here...</div>
+          <input type="text" id="dialog-input-field" class="hidden" placeholder="Enter text...">
+        </div>
+        <div class="dialog-footer">
+          <button id="dialog-btn-cancel" class="dialog-btn dialog-btn-secondary">Cancel</button>
+          <button id="dialog-btn-confirm" class="dialog-btn dialog-btn-primary">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Screen -->
     <div id="loading-screen" class="screen-overlay hidden">
       <div class="spinner"></div>
       <p id="loading-text">Loading...</p>
@@ -572,7 +841,7 @@
 
     <!-- Header -->
     <header id="header">
-      <span class="brand-glow" id="screen-title">KaiTune Pro</span>
+      <span class="brand-glow" id="screen-title">&#9835; KaiTune Pro</span>
       <span id="header-category">Library</span>
     </header>
 
@@ -585,7 +854,7 @@
           <li class="nav-item focusable focused" data-cat="all">
             <div class="meta">
               <span class="title">All Tracks</span>
-              <span class="subtitle">Complete Music Library</span>
+              <span class="subtitle" id="sub-all-count">Complete Music Library</span>
             </div>
             <span class="val">&gt;</span>
           </li>
@@ -596,17 +865,17 @@
             </div>
             <span class="val">&gt;</span>
           </li>
-          <li class="nav-item focusable" data-cat="electronic">
+          <li class="nav-item focusable" data-cat="music">
             <div class="meta">
-              <span class="title">Electronic &amp; Synth</span>
-              <span class="subtitle">Cyberpunk, Bass &amp; Beats</span>
+              <span class="title">Music Hits</span>
+              <span class="subtitle" id="sub-music-count">Loading collection...</span>
             </div>
             <span class="val">&gt;</span>
           </li>
-          <li class="nav-item focusable" data-cat="acoustic">
+          <li class="nav-item focusable" data-cat="viral">
             <div class="meta">
-              <span class="title">Acoustic &amp; Chill</span>
-              <span class="subtitle">Guitar, Melodies &amp; Ambience</span>
+              <span class="title">Viral &amp; Trending</span>
+              <span class="subtitle" id="sub-viral-count">Loading collection...</span>
             </div>
             <span class="val">&gt;</span>
           </li>
@@ -739,21 +1008,82 @@
         </ul>
       </section>
 
-      <!-- View 6: Help Guide -->
+      <!-- View 6: Interactive Slideboard Help Guide -->
       <section id="view-help" class="view">
-        <div class="info-card">
-          <h4>Keypad Controls</h4>
-          <p><b>[ Escape / SoftLeft / F1 ]</b> Open Options Menu</p>
-          <p><b>[ SoftRight / F2 / Backspace ]</b> Back / Exit</p>
-          <p><b>[ 1 ]</b> Focus Search Bar</p>
-          <p><b>[ 2 ]</b> Toggle Shuffle Mode</p>
-          <p><b>[ 3 ]</b> Toggle Repeat Mode</p>
-          <p><b>[ 4 ]</b> Download / Save Track</p>
-          <p><b>[ 5 ]</b> Add Focused Track to Queue (Play Next)</p>
-          <p><b>[ * ]</b> Set Cutter Start Point</p>
-          <p><b>[ # ]</b> Set Cutter End Point</p>
-          <p><b>[ Left / Right ]</b> 5s Seek (Player) / 2s Seek (Cutter)</p>
-          <p><b>[ Center / Enter ]</b> Select / Play / Pause</p>
+        <div class="slideboard-container">
+          <div class="slideboard-viewport">
+            <div class="slideboard-wrapper" id="help-slide-wrapper">
+              
+              <!-- Slide 1: Quick Controls -->
+              <div class="slide-item">
+                <div class="slide-header">
+                  <span class="slide-icon">&#9000;</span>
+                  <span class="slide-title">1. Keypad Shortcuts</span>
+                </div>
+                <div class="slide-content">
+                  <p><b>[SoftLeft / F1 / Esc]</b> Options Menu</p>
+                  <p><b>[SoftRight / F2 / Back]</b> Go Back / Exit</p>
+                  <p><b>[ 1 ]</b> Search Focus &bull; <b>[ 2 ]</b> Shuffle</p>
+                  <p><b>[ 3 ]</b> Repeat &bull; <b>[ 4 ]</b> Download Track</p>
+                  <p><b>[ 5 ]</b> Add Focused Track to Queue</p>
+                  <p><b>[Center / Enter]</b> Play, Pause &amp; Select</p>
+                </div>
+              </div>
+
+              <!-- Slide 2: Ringtone Trimmer -->
+              <div class="slide-item">
+                <div class="slide-header">
+                  <span class="slide-icon">&#9986;</span>
+                  <span class="slide-title">2. Pro Ringtone Cutter</span>
+                </div>
+                <div class="slide-content">
+                  <p>Listen along the live <b>Red Playhead</b>.</p>
+                  <p>Press <b>[*] Key</b> to lock Clip Start time.</p>
+                  <p>Press <b>[#] Key</b> to lock Clip End time.</p>
+                  <p>Press <b>[Left / Right]</b> to seek backward/forward.</p>
+                  <p>Use <b>Options &gt; Export WAV</b> to save your cut clip.</p>
+                </div>
+              </div>
+
+              <!-- Slide 3: Equalizer & Themes -->
+              <div class="slide-item">
+                <div class="slide-header">
+                  <span class="slide-icon">&#9879;</span>
+                  <span class="slide-title">3. Equalizer &amp; Audio FX</span>
+                </div>
+                <div class="slide-content">
+                  <p><b>Bass &amp; Treble:</b> Adjust low/high shelving filters up to +12dB.</p>
+                  <p><b>Playback Speed:</b> Switch from 0.75x to 2.0x pitch-aligned.</p>
+                  <p><b>Visualizer Themes:</b> Choose between <b>Cyan Neon</b>, <b>Fire Glow</b> &amp; <b>Emerald Pulse</b>.</p>
+                </div>
+              </div>
+
+              <!-- Slide 4: Online Sync & Storage -->
+              <div class="slide-item">
+                <div class="slide-header">
+                  <span class="slide-icon">&#9729;</span>
+                  <span class="slide-title">4. Online Sync &amp; Storage</span>
+                </div>
+                <div class="slide-content">
+                  <p><b>Auto-Fetch:</b> KaiTune loads local <code>db.json</code>, falling back to GitHub automatically.</p>
+                  <p><b>Set As Ringtone:</b> Set trimmed clips as your device ringtone.</p>
+                  <p><b>Custom BG:</b> Pick any image as your wallpaper.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Slideboard Navigation Dots & Controller -->
+          <div class="slideboard-nav-bar">
+            <div class="slide-dots">
+              <span class="slide-dot active"></span>
+              <span class="slide-dot"></span>
+              <span class="slide-dot"></span>
+              <span class="slide-dot"></span>
+            </div>
+            <span class="slide-indicator-label" id="help-slide-counter">Slide 1 of 4 &bull; [Left/Right]</span>
+          </div>
         </div>
       </section>
 
@@ -761,8 +1091,9 @@
       <section id="view-about" class="view">
         <div class="info-card">
           <h4>About KaiTune Pro</h4>
-          <p><b>Version:</b> 3.1 Pro Audio Suite</p>
-          <p><b>Audio Trimmer:</b> Live Timeline Red Playhead, Clip Looper &amp; Direct WAV Exporter.</p>
+          <p><b>Version:</b> 3.5 Ultimate Edition</p>
+          <p><b>Engine:</b> Web Audio API + Pro WAV DSP</p>
+          <p><b>Features:</b> Slideboard Tutorial, Custom Modals, Direct WAV Trimmer, Visualizer &amp; GitHub Auto-Sync.</p>
         </div>
       </section>
 
@@ -778,7 +1109,108 @@
 
   <script>
     /* ==========================================================
-       1. WEB AUDIO ENGINE
+       1. CUSTOM UI SYSTEM (ALERT, CONFIRM, PROMPT, TOAST)
+       ========================================================== */
+    var CustomUI = (function () {
+      var backdrop = document.getElementById('custom-dialog-backdrop');
+      var titleEl = document.getElementById('dialog-title');
+      var messageEl = document.getElementById('dialog-message');
+      var inputEl = document.getElementById('dialog-input-field');
+      var btnConfirm = document.getElementById('dialog-btn-confirm');
+      var btnCancel = document.getElementById('dialog-btn-cancel');
+      var toastEl = document.getElementById('custom-toast');
+      var toastTimer = null;
+
+      var currentCallback = null;
+      var currentCancelCallback = null;
+      var isModalActive = false;
+
+      function closeDialog() {
+        backdrop.classList.add('hidden');
+        inputEl.classList.add('hidden');
+        inputEl.value = '';
+        isModalActive = false;
+        currentCallback = null;
+        currentCancelCallback = null;
+        if (window.AppController) window.AppController.updateSoftkeys();
+      }
+
+      btnConfirm.addEventListener('click', function () {
+        var val = inputEl.classList.contains('hidden') ? true : inputEl.value;
+        var cb = currentCallback;
+        closeDialog();
+        if (cb) cb(val);
+      });
+
+      btnCancel.addEventListener('click', function () {
+        var cb = currentCancelCallback;
+        closeDialog();
+        if (cb) cb();
+      });
+
+      return {
+        isModalOpen: function () {
+          return isModalActive;
+        },
+        alert: function (message, title, onOk) {
+          isModalActive = true;
+          titleEl.innerText = title || "Notification";
+          messageEl.innerText = message;
+          inputEl.classList.add('hidden');
+          btnCancel.classList.add('hidden');
+          btnConfirm.innerText = "OK";
+          currentCallback = onOk;
+          currentCancelCallback = null;
+          backdrop.classList.remove('hidden');
+          if (window.AppController) window.AppController.updateSoftkeys();
+        },
+        confirm: function (message, title, onConfirm, onCancel) {
+          isModalActive = true;
+          titleEl.innerText = title || "Confirm Action";
+          messageEl.innerText = message;
+          inputEl.classList.add('hidden');
+          btnCancel.classList.remove('hidden');
+          btnCancel.innerText = "Cancel";
+          btnConfirm.innerText = "Confirm";
+          currentCallback = onConfirm;
+          currentCancelCallback = onCancel;
+          backdrop.classList.remove('hidden');
+          if (window.AppController) window.AppController.updateSoftkeys();
+        },
+        prompt: function (message, defaultValue, title, onConfirm, onCancel) {
+          isModalActive = true;
+          titleEl.innerText = title || "Input Prompt";
+          messageEl.innerText = message;
+          inputEl.classList.remove('hidden');
+          inputEl.value = defaultValue || '';
+          btnCancel.classList.remove('hidden');
+          btnCancel.innerText = "Cancel";
+          btnConfirm.innerText = "Submit";
+          currentCallback = onConfirm;
+          currentCancelCallback = onCancel;
+          backdrop.classList.remove('hidden');
+          setTimeout(function () { inputEl.focus(); }, 100);
+          if (window.AppController) window.AppController.updateSoftkeys();
+        },
+        toast: function (msg, duration) {
+          if (toastTimer) clearTimeout(toastTimer);
+          toastEl.innerText = msg;
+          toastEl.classList.add('show');
+          toastTimer = setTimeout(function () {
+            toastEl.classList.remove('show');
+          }, duration || 2400);
+        },
+        handleConfirmAction: function () {
+          btnConfirm.click();
+        },
+        handleCancelAction: function () {
+          btnCancel.click();
+        }
+      };
+    })();
+
+    /* ==========================================================
+       2. WEB AUDIO ENGINE
        ========================================================== */
     var AudioEngine = (function () {
       var audio = new Audio();
@@ -802,7 +1234,7 @@
       function resizeCanvas() {
         if (canvas) {
           canvas.width = canvas.clientWidth || 240;
-          canvas.height = canvas.clientHeight || 100;
+          canvas.height = canvas.clientHeight || 95;
         }
       }
       window.addEventListener('resize', resizeCanvas);
@@ -900,7 +1332,7 @@
     })();
 
     /* ==========================================================
-       2. AUDIO CUTTER & WAV EXPORTER MODULE
+       3. AUDIO CUTTER & WAV EXPORTER MODULE
        ========================================================== */
     var AudioCutter = (function () {
       var startTime = 0;
@@ -914,7 +1346,7 @@
         xhr.onload = function () {
           var AudioContextClass = window.AudioContext || window.webkitAudioContext;
           if (!AudioContextClass) {
-            alert('Web Audio API not supported on this browser.');
+            CustomUI.alert('Web Audio API not supported on this browser.', 'Error');
             if (callback) callback(null);
             return;
           }
@@ -938,12 +1370,12 @@
             var wavBlob = bufferToWave(trimmed, frameCount);
             if (callback) callback(wavBlob);
           }, function (err) {
-            alert('Failed to decode audio data: ' + (err || 'Unknown error'));
+            CustomUI.alert('Failed to decode audio data.', 'Trim Error');
             if (callback) callback(null);
           });
         };
         xhr.onerror = function () {
-          alert('Network error while fetching audio file.');
+          CustomUI.alert('Network error while fetching audio file.', 'Network Error');
           if (callback) callback(null);
         };
         xhr.send();
@@ -1001,15 +1433,15 @@
     })();
 
     /* ==========================================================
-       3. CONTROLLER & NAVIGATION
+       4. CONTROLLER & NAVIGATION
        ========================================================== */
     document.addEventListener('DOMContentLoaded', function () {
       var defaultTracks = [
-        { id: "1", title: "Cyber Beat Ringtone", artist: "Synth Lab", category: "electronic", url: "https://actions.google.com/sounds/v1/science_fiction/scifi_laser_burst.ogg" },
-        { id: "2", title: "Electro Bass Drop", artist: "Pulse Studio", category: "electronic", url: "https://actions.google.com/sounds/v1/science_fiction/teleport.ogg" },
-        { id: "3", title: "Acoustic Melody", artist: "Guitar Vibes", category: "acoustic", url: "https://actions.google.com/sounds/v1/ambiences/outdoor_market.ogg" },
-        { id: "4", title: "Peaceful Morning", artist: "Zenith Sound", category: "acoustic", url: "https://actions.google.com/sounds/v1/weather/light_rain.ogg" },
-        { id: "5", title: "Notification Chime FX", artist: "Bell Tone", category: "ringtones", url: "https://actions.google.com/sounds/v1/foley/beeps_single.ogg" }
+        { id: "def_1", title: "Cyber Beat Ringtone", artist: "Synth Lab", category: "ringtones", url: "https://actions.google.com/sounds/v1/science_fiction/scifi_laser_burst.ogg" },
+        { id: "def_2", title: "Electro Bass Drop", artist: "Pulse Studio", category: "ringtones", url: "https://actions.google.com/sounds/v1/science_fiction/teleport.ogg" },
+        { id: "def_3", title: "Acoustic Melody", artist: "Guitar Vibes", category: "music", url: "https://actions.google.com/sounds/v1/ambiences/outdoor_market.ogg" },
+        { id: "def_4", title: "Peaceful Morning", artist: "Zenith Sound", category: "music", url: "https://actions.google.com/sounds/v1/weather/light_rain.ogg" },
+        { id: "def_5", title: "Notification Chime FX", artist: "Bell Tone", category: "ringtones", url: "https://actions.google.com/sounds/v1/foley/beeps_single.ogg" }
       ];
 
       var allTracks = defaultTracks.slice();
@@ -1039,29 +1471,160 @@
       var themes = ['cyan', 'fire', 'emerald'];
       var themeIndex = 0;
 
-      // Load tracks from tracks.json
-      function loadExternalTracks() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'tracks.json', true);
-        xhr.onload = function () {
-          if (xhr.status === 200 || xhr.status === 0) {
-            try {
-              var parsed = JSON.parse(xhr.responseText);
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                allTracks = parsed;
-                updateFavCountBadge();
+      // Slideboard Tutorial state
+      var currentHelpSlide = 0;
+      var totalHelpSlides = 4;
+
+      /* ==========================================================
+         RESOURCE LOADER: LOCAL OR FALLBACK TO REMOTE PREFIX
+         ========================================================== */
+      var REMOTE_BASE = "https://shifat100.github.io/";
+
+      function fetchJsonWithFallback(localPath, remoteBase, callback) {
+        var cleanLocal = localPath.replace(/^\/+/, '');
+        var remoteUrl = remoteBase.replace(/\/+$/, '') + '/' + cleanLocal;
+
+        function doRequest(targetUrl, isFallback) {
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', targetUrl, true);
+          xhr.timeout = 10000;
+          xhr.onload = function () {
+            if (xhr.status === 200 || (xhr.status === 0 && xhr.responseText)) {
+              try {
+                var parsed = JSON.parse(xhr.responseText);
+                callback(null, parsed, targetUrl);
+              } catch (e) {
+                if (!isFallback) {
+                  doRequest(remoteUrl, true);
+                } else {
+                  callback(e, null, targetUrl);
+                }
               }
-            } catch (e) {
-              console.warn("Could not parse tracks.json, using fallback.");
+            } else {
+              if (!isFallback) {
+                doRequest(remoteUrl, true);
+              } else {
+                callback(new Error('Status: ' + xhr.status), null, targetUrl);
+              }
+            }
+          };
+          xhr.onerror = function () {
+            if (!isFallback) {
+              doRequest(remoteUrl, true);
+            } else {
+              callback(new Error('Network error on ' + targetUrl), null, targetUrl);
+            }
+          };
+          xhr.ontimeout = function () {
+            if (!isFallback) {
+              doRequest(remoteUrl, true);
+            } else {
+              callback(new Error('Timeout on ' + targetUrl), null, targetUrl);
+            }
+          };
+          xhr.send();
+        }
+
+        doRequest(cleanLocal, false);
+      }
+
+      function normalizeTrackList(rawData, defaultCategory, sourceUrl) {
+        var rawList = Array.isArray(rawData) ? rawData : (rawData.tracks || rawData.data || rawData.songs || []);
+        var normalized = [];
+        var baseDirectory = sourceUrl.substring(0, sourceUrl.lastIndexOf('/') + 1);
+
+        for (var i = 0; i < rawList.length; i++) {
+          var item = rawList[i];
+          if (!item) continue;
+
+          var title = item.title || item.name || item.trackName || ('Track ' + (i + 1));
+          var artist = item.artist || item.singer || item.author || (defaultCategory === 'viral' ? 'Viral Hits' : 'Music');
+          var rawUrl = item.url || item.src || item.path || item.file || item.link || '';
+
+          if (!rawUrl) continue;
+
+          var resolvedUrl = rawUrl;
+          if (!/^https?:\/\//i.test(rawUrl) && !rawUrl.startsWith('blob:') && !rawUrl.startsWith('data:')) {
+            if (rawUrl.startsWith('/')) {
+              var domainMatch = sourceUrl.match(/^(https?:\/\/[^\/]+)/i);
+              resolvedUrl = domainMatch ? (domainMatch[1] + rawUrl) : rawUrl;
+            } else {
+              resolvedUrl = baseDirectory + rawUrl;
             }
           }
-        };
-        xhr.onerror = function() {
-          console.warn("tracks.json not found, using fallback data.");
-        };
-        xhr.send();
+
+          var trackId = item.id ? String(item.id) : (defaultCategory + '_' + i + '_' + title.replace(/\s+/g, '_'));
+          var category = item.category || defaultCategory;
+
+          normalized.push({
+            id: trackId,
+            title: title,
+            artist: artist,
+            category: category,
+            url: resolvedUrl
+          });
+        }
+        return normalized;
       }
-      loadExternalTracks();
+
+      function mergeTracks(newTracks) {
+        if (!newTracks || newTracks.length === 0) return;
+        for (var i = 0; i < newTracks.length; i++) {
+          var nt = newTracks[i];
+          var exists = false;
+          for (var j = 0; j < allTracks.length; j++) {
+            if (allTracks[j].id === nt.id || (allTracks[j].url === nt.url && allTracks[j].title === nt.title)) {
+              allTracks[j] = nt;
+              exists = true;
+              break;
+            }
+          }
+          if (!exists) {
+            allTracks.push(nt);
+          }
+        }
+        updateCategoryBadges();
+        if (currentView === 'view-list') {
+          filterAndRenderCurrentCategory();
+        }
+      }
+
+      function updateCategoryBadges() {
+        var musicCount = allTracks.filter(function (t) { return t.category === 'music'; }).length;
+        var viralCount = allTracks.filter(function (t) { return t.category === 'viral'; }).length;
+        var elMusic = document.getElementById('sub-music-count');
+        var elViral = document.getElementById('sub-viral-count');
+        var elAll = document.getElementById('sub-all-count');
+
+        if (elMusic) elMusic.innerText = musicCount + ' audio tracks';
+        if (elViral) elViral.innerText = viralCount + ' viral tracks';
+        if (elAll) elAll.innerText = allTracks.length + ' Total Tracks';
+        updateFavCountBadge();
+      }
+
+      function loadDatabases() {
+        // 1. Fetch audio/music/db.json
+        fetchJsonWithFallback('audio/music/db.json', REMOTE_BASE, function (err, data, resolvedUrl) {
+          if (!err && data) {
+            var musicTracks = normalizeTrackList(data, 'music', resolvedUrl);
+            mergeTracks(musicTracks);
+          } else {
+            console.warn('Music DB load notice:', err);
+          }
+        });
+
+        // 2. Fetch audio/viral/db.json
+        fetchJsonWithFallback('audio/viral/db.json', REMOTE_BASE, function (err, data, resolvedUrl) {
+          if (!err && data) {
+            var viralTracks = normalizeTrackList(data, 'viral', resolvedUrl);
+            mergeTracks(viralTracks);
+          } else {
+            console.warn('Viral DB load notice:', err);
+          }
+        });
+      }
+
+      loadDatabases();
 
       // Restore saved wallpaper
       var savedBg = localStorage.getItem('kune_custom_bg');
@@ -1088,19 +1651,22 @@
         el.className = show ? 'screen-overlay' : 'screen-overlay hidden';
       }
 
+      function filterAndRenderCurrentCategory() {
+        if (currentCategory === 'all') {
+          displayedTracks = allTracks.slice();
+        } else if (currentCategory === 'favorites') {
+          displayedTracks = allTracks.filter(function (t) { return favorites.indexOf(t.id) !== -1; });
+        } else {
+          displayedTracks = allTracks.filter(function (t) { return t.category === currentCategory; });
+        }
+        renderTrackList(displayedTracks);
+      }
+
       function openCategory(catId, catName) {
         currentCategory = catId;
         document.getElementById('header-category').innerText = catName;
         document.getElementById('search-input').value = '';
-
-        if (catId === 'all') {
-          displayedTracks = allTracks.slice();
-        } else if (catId === 'favorites') {
-          displayedTracks = allTracks.filter(function (t) { return favorites.indexOf(t.id) !== -1; });
-        } else {
-          displayedTracks = allTracks.filter(function (t) { return t.category === catId; });
-        }
-        renderTrackList(displayedTracks);
+        filterAndRenderCurrentCategory();
         switchView('view-list');
       }
 
@@ -1168,7 +1734,33 @@
       }
 
       /* ==========================================================
-         4. CONTEXT-AWARE OPTIONS MENU BUILDER
+         SLIDEBOARD LOGIC (HELP SCREEN)
+         ========================================================== */
+      function setHelpSlide(index) {
+        if (index < 0) index = 0;
+        if (index >= totalHelpSlides) index = totalHelpSlides - 1;
+        currentHelpSlide = index;
+
+        var wrapper = document.getElementById('help-slide-wrapper');
+        if (wrapper) {
+          wrapper.style.transform = 'translateX(-' + (currentHelpSlide * 25) + '%)';
+        }
+
+        var dots = document.querySelectorAll('.slide-dots .slide-dot');
+        for (var d = 0; d < dots.length; d++) {
+          if (d === currentHelpSlide) dots[d].classList.add('active');
+          else dots[d].classList.remove('active');
+        }
+
+        var counterEl = document.getElementById('help-slide-counter');
+        if (counterEl) {
+          counterEl.innerText = 'Slide ' + (currentHelpSlide + 1) + ' of ' + totalHelpSlides + ' • [Left/Right]';
+        }
+        updateSoftkeys();
+      }
+
+      /* ==========================================================
+         OPTIONS MENU BUILDER
          ========================================================== */
       function buildOptionsMenu() {
         var ul = document.getElementById('j2me-menu-list');
@@ -1180,7 +1772,6 @@
         var activeFocusedTrack = isTrackSelected ? displayedTracks[focusedIndex - 1] : (currentTrackObject || allTracks[0]);
         var isFav = (activeFocusedTrack && favorites.indexOf(activeFocusedTrack.id) !== -1);
 
-        // 1. Categories View Context
         if (currentView === 'view-categories') {
           if (hasActiveAudio) {
             currentMenuOptions.push({ key: '1', cmd: 'nowplaying', label: 'Now Playing' });
@@ -1192,9 +1783,7 @@
           currentMenuOptions.push({ key: '6', cmd: 'help', label: 'Help Guide' });
           currentMenuOptions.push({ key: '7', cmd: 'about', label: 'About KaiTune' });
           currentMenuOptions.push({ key: '0', cmd: 'exit', label: 'Exit' });
-        }
-        // 2. Track List View Context
-        else if (currentView === 'view-list') {
+        } else if (currentView === 'view-list') {
           if (isTrackSelected) {
             currentMenuOptions.push({ key: '1', cmd: 'play_selected', label: 'Play Track' });
             currentMenuOptions.push({ key: '2', cmd: 'add_queue', label: 'Play Next (Add to Queue)' });
@@ -1209,9 +1798,7 @@
             currentMenuOptions.push({ key: '9', cmd: 'nowplaying', label: 'Now Playing Screen' });
           }
           currentMenuOptions.push({ key: '0', cmd: 'exit', label: 'Exit' });
-        }
-        // 3. Player View Context
-        else if (currentView === 'view-player') {
+        } else if (currentView === 'view-player') {
           currentMenuOptions.push({ key: '1', cmd: 'cutter', label: 'Ringtone Cutter (Trim)' });
           currentMenuOptions.push({ key: '2', cmd: 'toggle_fav', label: isFav ? 'Remove from Favorites' : 'Add to Favorites' });
           currentMenuOptions.push({ key: '3', cmd: 'ringtone', label: 'Set as Ringtone' });
@@ -1222,26 +1809,20 @@
           currentMenuOptions.push({ key: '8', cmd: 'toggle_theme', label: 'Spectrum Theme: ' + themes[themeIndex].toUpperCase() });
           currentMenuOptions.push({ key: '9', cmd: 'help', label: 'Help Guide' });
           currentMenuOptions.push({ key: '0', cmd: 'exit', label: 'Exit' });
-        }
-        // 4. Audio Cutter View Context
-        else if (currentView === 'view-cutter') {
+        } else if (currentView === 'view-cutter') {
           currentMenuOptions.push({ key: '1', cmd: 'export_cut', label: 'Export / Download Trimmed WAV' });
           currentMenuOptions.push({ key: '2', cmd: 'play_preview_range', label: 'Listen Selected Clip' });
           currentMenuOptions.push({ key: '3', cmd: 'ringtone_trimmed', label: 'Set Trimmed as Ringtone' });
           currentMenuOptions.push({ key: '4', cmd: 'reset_cutter', label: 'Reset Markers (0s - End)' });
           currentMenuOptions.push({ key: '5', cmd: 'nowplaying', label: 'Back to Player' });
           currentMenuOptions.push({ key: '6', cmd: 'help', label: 'Cutter Help Guide' });
-        }
-        // 5. Settings View Context
-        else if (currentView === 'view-settings') {
+        } else if (currentView === 'view-settings') {
           currentMenuOptions.push({ key: '1', cmd: 'reset_eq', label: 'Reset EQ to Default' });
           currentMenuOptions.push({ key: '2', cmd: 'wallpaper', label: 'Set BG from Storage' });
           currentMenuOptions.push({ key: '3', cmd: 'clear_wallpaper', label: 'Reset Default BG' });
           currentMenuOptions.push({ key: '4', cmd: 'help', label: 'Help Guide' });
           currentMenuOptions.push({ key: '5', cmd: 'about', label: 'About KaiTune' });
-        }
-        // 6. Help / About View Context
-        else {
+        } else {
           if (hasActiveAudio) {
             currentMenuOptions.push({ key: '1', cmd: 'nowplaying', label: 'Now Playing' });
           }
@@ -1249,7 +1830,6 @@
           currentMenuOptions.push({ key: '0', cmd: 'exit', label: 'Exit' });
         }
 
-        // Render Menu Items
         for (var i = 0; i < currentMenuOptions.length; i++) {
           var opt = currentMenuOptions[i];
           var li = document.createElement('li');
@@ -1298,6 +1878,13 @@
         var c = document.getElementById('softkey-center');
         var r = document.getElementById('softkey-right');
 
+        if (CustomUI.isModalOpen()) {
+          l.innerText = '';
+          c.innerText = 'OK';
+          r.innerText = 'Cancel';
+          return;
+        }
+
         if (isMenuOpen) {
           l.innerText = 'Select';
           c.innerText = 'Select';
@@ -1318,6 +1905,10 @@
           l.innerText = 'Options';
           c.innerText = isPlaying ? 'Pause' : 'Play';
           r.innerText = 'Back';
+        } else if (currentView === 'view-help') {
+          l.innerText = (currentHelpSlide > 0) ? '< Prev' : 'Options';
+          c.innerText = 'Options';
+          r.innerText = (currentHelpSlide < totalHelpSlides - 1) ? 'Next >' : 'Back';
         } else {
           l.innerText = 'Options';
           c.innerText = 'Select';
@@ -1325,8 +1916,10 @@
         }
       }
 
+      window.AppController = { updateSoftkeys: updateSoftkeys };
+
       /* ==========================================================
-         5. CUTTER UI & TIMELINE RED LINE UPDATES
+         CUTTER UI UPDATES
          ========================================================== */
       function setupCutterScreen() {
         var track = currentTrackObject || (displayedTracks.length > 0 ? displayedTracks[0] : allTracks[0]);
@@ -1407,7 +2000,6 @@
           var cur = AudioEngine.audio.currentTime;
           var dur = AudioEngine.audio.duration || 1;
 
-          // Clip Preview Looper/Stopper Logic
           if (currentView === 'view-cutter' && AudioCutter.getIsPreviewing()) {
             if (cur >= AudioCutter.getEnd()) {
               AudioEngine.audio.pause();
@@ -1420,12 +2012,10 @@
             }
           }
 
-          // Player View progress update
           document.getElementById('progress-fill').style.width = ((cur / dur) * 100) + '%';
           document.getElementById('cur-time').innerText = formatTime(cur);
           document.getElementById('total-time').innerText = formatTime(dur);
 
-          // Cutter View Live Red Line update
           if (currentView === 'view-cutter') {
             updateCutterTimelineUI();
           }
@@ -1457,7 +2047,7 @@
 
         AudioEngine.audio.onerror = function () {
           toggleLoading(false);
-          alert("Unable to load audio track.");
+          CustomUI.toast("Unable to load audio track.");
         };
       }
 
@@ -1479,16 +2069,15 @@
         var idx = favorites.indexOf(track.id);
         if (idx === -1) {
           favorites.push(track.id);
-          alert("Added to Favorites Playlist!");
+          CustomUI.toast("★ Added to Favorites!");
         } else {
           favorites.splice(idx, 1);
-          alert("Removed from Favorites Playlist!");
+          CustomUI.toast("Removed from Favorites.");
         }
         localStorage.setItem('kune_favorites', JSON.stringify(favorites));
         updateFavCountBadge();
         if (currentCategory === 'favorites') {
-          displayedTracks = allTracks.filter(function (t) { return favorites.indexOf(t.id) !== -1; });
-          renderTrackList(displayedTracks);
+          filterAndRenderCurrentCategory();
         }
       }
 
@@ -1496,7 +2085,7 @@
         if (!track) return;
         playbackQueue.push(track);
         updateQueueBadges();
-        alert("Added to Next in Queue!");
+        CustomUI.toast("Queued: " + track.title);
       }
 
       function saveBlobToStorage(blob, fileName, successMsg) {
@@ -1506,10 +2095,9 @@
           if (storage) {
             var req = storage.addNamed(blob, fileName);
             req.onsuccess = function () {
-              alert(successMsg || "File saved to device storage!");
+              CustomUI.toast(successMsg || "Saved to Music Storage!");
             };
             req.onerror = function () {
-              // Try browser download fallback on storage error
               fallbackBrowserDownload(blob, fileName);
             };
             return;
@@ -1531,9 +2119,9 @@
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
           }, 500);
-          alert("Download started: " + fileName);
+          CustomUI.toast("Download started: " + fileName);
         } catch (e) {
-          alert("Failed to initiate download: " + e.message);
+          CustomUI.alert("Download error: " + e.message, "Error");
         }
       }
 
@@ -1548,12 +2136,13 @@
         xhr.onload = function () {
           toggleLoading(false);
           var blob = xhr.response;
-          var fileName = track.title.replace(/\s+/g, '_') + '.ogg';
-          saveBlobToStorage(blob, fileName, "Audio saved to Music Storage!");
+          var ext = track.url.indexOf('.mp3') !== -1 ? '.mp3' : '.ogg';
+          var fileName = track.title.replace(/\s+/g, '_') + ext;
+          saveBlobToStorage(blob, fileName, "Saved to device storage!");
         };
         xhr.onerror = function () {
           toggleLoading(false);
-          alert("Download failed.");
+          CustomUI.toast("Download failed.");
         };
         xhr.send();
       }
@@ -1568,10 +2157,10 @@
               data: { type: "audio/*", blob: blobData || AudioEngine.audio.src }
             });
           } else {
-            alert("Ringtone Activity triggered (Available on KaiOS Devices).");
+            CustomUI.toast("Ringtone Activity (KaiOS Only)");
           }
         } catch (e) {
-          alert("Ringtone error: " + e.message);
+          CustomUI.toast("Ringtone error: " + e.message);
         }
       }
 
@@ -1589,7 +2178,7 @@
                 reader.onload = function (e) {
                   localStorage.setItem('kune_custom_bg', e.target.result);
                   document.getElementById('bg-overlay').style.backgroundImage = 'url(' + e.target.result + ')';
-                  alert("Wallpaper set from KaiOS storage!");
+                  CustomUI.toast("Wallpaper set from storage!");
                 };
                 reader.readAsDataURL(blob);
               }
@@ -1606,16 +2195,16 @@
                 reader.onload = function (e) {
                   localStorage.setItem('kune_custom_bg', e.target.result);
                   document.getElementById('bg-overlay').style.backgroundImage = 'url(' + e.target.result + ')';
-                  alert("Wallpaper applied from device pictures!");
+                  CustomUI.toast("Wallpaper applied!");
                 };
                 reader.readAsDataURL(file);
               } else {
-                alert("No pictures found in device storage.");
+                CustomUI.toast("No pictures found in storage.");
               }
             };
             cursor.onerror = function () {
               toggleLoading(false);
-              alert("Device storage access denied or failed.");
+              CustomUI.toast("Storage access denied.");
             };
           } else {
             var fileInput = document.getElementById('bg-file-picker');
@@ -1625,7 +2214,7 @@
                 reader.onload = function (ev) {
                   localStorage.setItem('kune_custom_bg', ev.target.result);
                   document.getElementById('bg-overlay').style.backgroundImage = 'url(' + ev.target.result + ')';
-                  alert("Wallpaper set successfully!");
+                  CustomUI.toast("Wallpaper set successfully!");
                 };
                 reader.readAsDataURL(e.target.files[0]);
               }
@@ -1634,14 +2223,14 @@
           }
         } catch (err) {
           toggleLoading(false);
-          alert("Storage Error: " + err.message);
+          CustomUI.toast("Storage Error: " + err.message);
         }
       }
 
       function clearCustomWallpaper() {
         localStorage.removeItem('kune_custom_bg');
         document.getElementById('bg-overlay').style.backgroundImage = 'none';
-        alert("Wallpaper reset to default theme.");
+        CustomUI.toast("Wallpaper reset to default theme.");
       }
 
       function toggleShuffle() {
@@ -1651,6 +2240,7 @@
         if (badge) badge.innerText = 'SHUF: ' + val;
         var valEl = document.getElementById('val-shuffle');
         if (valEl) valEl.innerText = val;
+        CustomUI.toast("Shuffle: " + val);
       }
 
       function toggleRepeat() {
@@ -1663,6 +2253,7 @@
         if (pBadge) pBadge.innerText = 'Repeat: ' + repeatMode.toUpperCase();
         var valEl = document.getElementById('val-repeat');
         if (valEl) valEl.innerText = repeatMode.toUpperCase();
+        CustomUI.toast("Repeat Mode: " + repeatMode.toUpperCase());
       }
 
       function switchView(viewId, isBack) {
@@ -1683,6 +2274,8 @@
           setTimeout(function() { AudioEngine.resizeCanvas(); }, 100);
         } else if (viewId === 'view-cutter') {
           setupCutterScreen();
+        } else if (viewId === 'view-help') {
+          setHelpSlide(0);
         }
       }
 
@@ -1691,7 +2284,9 @@
           var prev = viewHistory.pop();
           switchView(prev, true);
         } else {
-          if (confirm("Exit KaiTune Pro?")) window.close();
+          CustomUI.confirm("Are you sure you want to exit KaiTune Pro?", "Exit Application", function () {
+            window.close();
+          });
         }
       }
 
@@ -1787,6 +2382,7 @@
             document.getElementById('cut-end-val').innerText = dur.toFixed(1) + 's';
             document.getElementById('cut-duration-val').innerText = dur.toFixed(1) + 's';
             updateCutterTimelineUI();
+            CustomUI.toast("Cutter markers reset.");
             break;
 
           case 'reset_eq':
@@ -1799,13 +2395,14 @@
             document.getElementById('val-bass').innerText = '+0 dB';
             document.getElementById('val-treble').innerText = '+0 dB';
             document.getElementById('val-speed').innerText = '1.0x';
-            alert("Equalizer reset to defaults.");
+            CustomUI.toast("Equalizer reset to defaults.");
             break;
 
           case 'toggle_theme':
             themeIndex = (themeIndex + 1) % themes.length;
             AudioEngine.setTheme(themes[themeIndex]);
             document.getElementById('val-theme').innerText = themes[themeIndex].toUpperCase();
+            CustomUI.toast("Theme: " + themes[themeIndex].toUpperCase());
             break;
 
           case 'ringtone':
@@ -1837,7 +2434,9 @@
             break;
 
           case 'exit':
-            if (confirm("Exit KaiTune Pro?")) window.close();
+            CustomUI.confirm("Are you sure you want to exit KaiTune Pro?", "Exit Application", function () {
+              window.close();
+            });
             break;
         }
       }
@@ -1846,17 +2445,26 @@
          ACTION DISPATCHERS (SOFTKEYS)
          ========================================================== */
       function handleLeftAction() {
+        if (CustomUI.isModalOpen()) return;
+
         if (isMenuOpen) {
           var menuItems = document.querySelectorAll('#j2me-menu-list .j2me-item');
           if (menuItems[menuFocusedIndex]) {
             executeMenuCommand(menuItems[menuFocusedIndex].getAttribute('data-cmd'));
           }
+        } else if (currentView === 'view-help' && currentHelpSlide > 0) {
+          setHelpSlide(currentHelpSlide - 1);
         } else {
           toggleJ2meMenu(true);
         }
       }
 
       function handleCenterAction() {
+        if (CustomUI.isModalOpen()) {
+          CustomUI.handleConfirmAction();
+          return;
+        }
+
         if (isMenuOpen) {
           var menuItems = document.querySelectorAll('#j2me-menu-list .j2me-item');
           if (menuItems[menuFocusedIndex]) {
@@ -1892,12 +2500,21 @@
           if (sItems[focusedIndex]) {
             handleSettingsAction(sItems[focusedIndex].getAttribute('data-action'));
           }
+        } else if (currentView === 'view-help') {
+          toggleJ2meMenu(true);
         }
       }
 
       function handleRightAction() {
+        if (CustomUI.isModalOpen()) {
+          CustomUI.handleCancelAction();
+          return;
+        }
+
         if (isMenuOpen) {
           toggleJ2meMenu(false);
+        } else if (currentView === 'view-help' && currentHelpSlide < totalHelpSlides - 1) {
+          setHelpSlide(currentHelpSlide + 1);
         } else {
           goBack();
         }
@@ -1908,20 +2525,24 @@
           bassLevel = (bassLevel + 3) % 15;
           AudioEngine.setBass(bassLevel);
           document.getElementById('val-bass').innerText = '+' + bassLevel + ' dB';
+          CustomUI.toast("Bass: +" + bassLevel + " dB");
         } else if (action === 'treble') {
           trebleLevel = (trebleLevel + 3) % 15;
           AudioEngine.setTreble(trebleLevel);
           document.getElementById('val-treble').innerText = '+' + trebleLevel + ' dB';
+          CustomUI.toast("Treble: +" + trebleLevel + " dB");
         } else if (action === 'speed') {
           var idx = (speeds.indexOf(currentSpeed) + 1) % speeds.length;
           currentSpeed = speeds[idx];
           AudioEngine.setSpeed(currentSpeed);
           document.getElementById('val-speed').innerText = currentSpeed + 'x';
           document.getElementById('player-speed-badge').innerText = 'Speed: ' + currentSpeed + 'x';
+          CustomUI.toast("Speed: " + currentSpeed + "x");
         } else if (action === 'theme') {
           themeIndex = (themeIndex + 1) % themes.length;
           AudioEngine.setTheme(themes[themeIndex]);
           document.getElementById('val-theme').innerText = themes[themeIndex].toUpperCase();
+          CustomUI.toast("Theme: " + themes[themeIndex].toUpperCase());
         } else if (action === 'toggle-shuffle') {
           toggleShuffle();
         } else if (action === 'toggle-repeat') {
@@ -1943,6 +2564,17 @@
          ========================================================== */
       window.addEventListener('keydown', function (e) {
         var key = e.key;
+
+        // Custom Modal Active Trap
+        if (CustomUI.isModalOpen()) {
+          if (key === 'Enter' || key === 'Select') {
+            CustomUI.handleConfirmAction();
+          } else if (key === 'Escape' || key === 'Backspace' || key === 'SoftRight' || key === 'F2') {
+            e.preventDefault();
+            CustomUI.handleCancelAction();
+          }
+          return;
+        }
 
         // In-Menu Keypad Control
         if (isMenuOpen) {
@@ -1975,7 +2607,7 @@
           return;
         }
 
-        // Search Input Active Safe Guard
+        // Search Input Active Safeguard
         var isSearchActive = (document.activeElement === document.getElementById('search-input'));
 
         if (!isSearchActive) {
@@ -1995,10 +2627,11 @@
               }
               break;
             case '0':
-              if (confirm("Exit KaiTune Pro?")) window.close();
+              CustomUI.confirm("Are you sure you want to exit KaiTuner ?", "Exit Application", function () {
+                window.close();
+              });
               break;
 
-            // [*] SET START POINT AT CURRENT RED PLAYHEAD POSITION
             case '*':
               if (currentView === 'view-cutter') {
                 var curTime = AudioEngine.audio.currentTime || 0;
@@ -2007,10 +2640,10 @@
                 var clipDur = Math.max(0.1, AudioCutter.getEnd() - AudioCutter.getStart());
                 document.getElementById('cut-duration-val').innerText = clipDur.toFixed(1) + 's';
                 updateCutterTimelineUI();
+                CustomUI.toast("Start Point: " + curTime.toFixed(1) + "s");
               }
               break;
 
-            // [#] SET END POINT AT CURRENT RED PLAYHEAD POSITION
             case '#':
               if (currentView === 'view-cutter') {
                 var curTimeEnd = AudioEngine.audio.currentTime || (AudioCutter.getStart() + 5);
@@ -2019,6 +2652,7 @@
                 var clipDur2 = Math.max(0.1, AudioCutter.getEnd() - AudioCutter.getStart());
                 document.getElementById('cut-duration-val').innerText = clipDur2.toFixed(1) + 's';
                 updateCutterTimelineUI();
+                CustomUI.toast("End Point: " + curTimeEnd.toFixed(1) + "s");
               }
               break;
           }
@@ -2050,6 +2684,8 @@
             } else if (currentView === 'view-cutter') {
               AudioEngine.audio.currentTime = Math.min(AudioEngine.audio.duration || 30, AudioEngine.audio.currentTime + 2);
               updateCutterTimelineUI();
+            } else if (currentView === 'view-help') {
+              setHelpSlide(currentHelpSlide + 1);
             }
             break;
 
@@ -2059,6 +2695,8 @@
             } else if (currentView === 'view-cutter') {
               AudioEngine.audio.currentTime = Math.max(0, AudioEngine.audio.currentTime - 2);
               updateCutterTimelineUI();
+            } else if (currentView === 'view-help') {
+              setHelpSlide(currentHelpSlide - 1);
             }
             break;
 
@@ -2067,7 +2705,6 @@
             handleCenterAction();
             break;
 
-          // ESCAPE KEY STRICTLY WORKS AS SOFTLEFT (OPTIONS / LEFT ACTION)
           case 'Escape':
           case 'SoftLeft':
           case 'F1':
@@ -2075,7 +2712,6 @@
             handleLeftAction();
             break;
 
-          // RIGHT SOFTKEY (BACK / EXIT)
           case 'SoftRight':
           case 'F2':
           case 'Backspace':
@@ -2140,6 +2776,16 @@
             openCategory(el.getAttribute('data-cat'), el.querySelector('.title').innerText);
           });
         })(catElements[c], c);
+      }
+
+      // Help Slide Dots Click Handler
+      var dotElements = document.querySelectorAll('.slide-dots .slide-dot');
+      for (var d = 0; d < dotElements.length; d++) {
+        (function (idx) {
+          dotElements[idx].addEventListener('click', function () {
+            setHelpSlide(idx);
+          });
+        })(d);
       }
 
       // Initialize App on Categories View
