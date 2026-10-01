@@ -1,30 +1,16 @@
 [
   {
-    "id": "mus_01",
-    "title": "Midnight Chill Lo-Fi",
-    "artist": "Aero Sound",
+    "id": "music_1_airtel__orchestral_version_",
+    "title": "Airtel (Orchestral Version)",
+    "artist": "Unknown Artist",
     "category": "music",
-    "url": "https://actions.google.com/sounds/v1/ambiences/outdoor_market.ogg"
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Airtel (Orchestral Version).mp3"
   },
   {
-    "id": "mus_02",
-    "title": "Acoustic Sunset Melody",
-    "artist": "Guitar Vibes",
+    "id": "music_2_airtel_original_music",
+    "title": "Airtel Original Music",
+    "artist": "Unknown Artist",
     "category": "music",
-    "url": "https://actions.google.com/sounds/v1/weather/light_rain.ogg"
-  },
-  {
-    "id": "mus_03",
-    "title": "Cyber Synthwave Drive",
-    "artist": "Neon Wave",
-    "category": "music",
-    "url": "track1.mp3"
-  },
-  {
-    "id": "mus_04",
-    "title": "Deep Bass Groove",
-    "artist": "Pulse Lab",
-    "category": "music",
-    "url": "track2.mp3"
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Airtel Original Music.mp3"
   }
 ]
