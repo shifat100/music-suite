@@ -271,19 +271,18 @@
           </select>
         </div>
         <div class="form-group" style="grid-column: 1 / -1;">
-          <label>GitHub Token (Optional - Increases rate limit to 5000/hr)</label>
-          <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx (Leave empty to use automatic fallback)">
+          <label>GitHub Token (Optional - for private repos &amp; high limits)</label>
+          <input type="password" id="gh-token" placeholder="ghp_xxxx or github_pat_xxxx">
         </div>
       </div>
 
-      <!-- Quick Preset Buttons & Local Upload -->
+      <!-- Preset Buttons & Local Upload -->
       <div class="preset-btns">
         <button class="btn" id="btn-fetch">&#128269; Scan GitHub Folder</button>
         <button class="btn btn-secondary" onclick="applyPreset('audio/music', 'music')">Preset: Music</button>
         <button class="btn btn-secondary" onclick="applyPreset('audio/viral', 'viral')">Preset: Viral</button>
         <button class="btn btn-secondary" onclick="applyPreset('audio/ringtones', 'ringtones')">Preset: Ringtones</button>
         
-        <!-- Local fallback without any API usage -->
         <label class="btn btn-accent" style="margin-left:auto; cursor:pointer;">
           📁 Scan Local Folder
           <input type="file" id="local-folder" webkitdirectory directory multiple class="hidden">
@@ -386,7 +385,7 @@
       });
 
       if (audioNames.length === 0) {
-        alert("No audio files (.mp3, .ogg, .wav, etc.) detected in this folder.");
+        alert("No audio files (.mp3, .ogg, .wav, etc.) detected in this folder. Found files:\n" + fileNames.join(", "));
         return;
       }
 
@@ -409,49 +408,12 @@
       showToast("Found " + tracks.length + " audio tracks!");
     }
 
-    // Fallback scanner via jsDelivr Data API (No rate limit)
-    function fetchFromJsDelivr(owner, repo, branch, path, defCategory, urlFormat) {
-      showToast("GitHub Rate limited: Trying CDN fallback...");
-      var cdnApi = 'https://data.jsdelivr.com/v1/packages/gh/' + owner + '/' + repo + '@' + branch + '/flat';
-
-      fetch(cdnApi)
-        .then(function(res) {
-          if (!res.ok) throw new Error("Could not find repository files via CDN fallback.");
-          return res.json();
-        })
-        .then(function(data) {
-          var cleanPath = path.replace(/^\/+|\/+$/g, '').toLowerCase();
-          var matchedFiles = [];
-
-          if (data && Array.isArray(data.files)) {
-            data.files.forEach(function(f) {
-              var relativeName = f.name.replace(/^\//, '');
-              var dirName = relativeName.substring(0, relativeName.lastIndexOf('/')).toLowerCase();
-              var fileName = relativeName.split('/').pop();
-
-              if (!cleanPath || dirName === cleanPath || relativeName.toLowerCase().startsWith(cleanPath + '/')) {
-                matchedFiles.push(fileName);
-              }
-            });
-          }
-
-          if (matchedFiles.length === 0) {
-            throw new Error("No matching audio files found at path: " + path);
-          }
-
-          processAudioList(matchedFiles, owner, repo, branch, path, defCategory, urlFormat);
-          showToast("Loaded tracks via CDN (Bypassed rate limit)!");
-        })
-        .catch(function(err) {
-          alert("Scan Failed: " + err.message + "\n\nTip: You can provide a GitHub Personal Access Token or use the 'Scan Local Folder' button.");
-        });
-    }
-
     document.getElementById('btn-fetch').addEventListener('click', function () {
       var owner = document.getElementById('gh-owner').value.trim();
       var repo = document.getElementById('gh-repo').value.trim();
       var branch = document.getElementById('gh-branch').value.trim() || 'main';
-      var path = document.getElementById('gh-path').value.trim();
+      var rawPath = document.getElementById('gh-path').value.trim();
+      var path = rawPath.replace(/^\/+|\/+$/g, ''); // strip leading/trailing slashes
       var token = document.getElementById('gh-token').value.trim();
       var defCategory = document.getElementById('default-category').value;
       var urlFormat = document.getElementById('url-format').value;
@@ -461,31 +423,38 @@
         return;
       }
 
-      var apiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path + '?ref=' + branch;
-      var headers = {};
+      var apiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path + (branch ? '?ref=' + branch : '');
+      var headers = {
+        'Accept': 'application/vnd.github.v3+json'
+      };
+      
       if (token) {
-        headers['Authorization'] = 'token ' + token;
+        headers['Authorization'] = 'Bearer ' + token;
       }
 
-      showToast("Scanning GitHub folder...");
+      showToast("Connecting to GitHub API...");
 
       fetch(apiUrl, { headers: headers })
         .then(function (res) {
-          if (res.status === 403 || res.status === 429) {
-            // API Rate Limit Hit -> Switch to CDN fallback
-            fetchFromJsDelivr(owner, repo, branch, path, defCategory, urlFormat);
-            return null;
-          }
           if (!res.ok) {
-            throw new Error("GitHub API Error: " + res.status + " " + res.statusText);
+            return res.json().then(function(errData) {
+              var msg = errData && errData.message ? errData.message : res.statusText;
+              if (res.status === 404) {
+                throw new Error("404 Not Found: Check that repo '" + owner + "/" + repo + "', branch '" + branch + "', and folder '" + path + "' all exist and match case.");
+              } else if (res.status === 401) {
+                throw new Error("401 Unauthorized: Your GitHub Personal Access Token is invalid or expired.");
+              } else if (res.status === 403) {
+                throw new Error("403 Forbidden / Rate Limit Exceeded: " + msg + "\nTip: Add a GitHub Personal Access Token or use 'Scan Local Folder'.");
+              } else {
+                throw new Error("GitHub Error (" + res.status + "): " + msg);
+              }
+            });
           }
           return res.json();
         })
         .then(function (data) {
-          if (!data) return; // Handled by fallback
-
           if (!Array.isArray(data)) {
-            alert("Specified path is not a folder or repository is empty.");
+            alert("The path '" + path + "' is a single file, not a directory folder.");
             return;
           }
 
@@ -493,12 +462,11 @@
           processAudioList(fileNames, owner, repo, branch, path, defCategory, urlFormat);
         })
         .catch(function (err) {
-          // If GitHub API completely fails, attempt fallback
-          fetchFromJsDelivr(owner, repo, branch, path, defCategory, urlFormat);
+          alert(err.message);
         });
     });
 
-    // Local Folder Scan feature (Zero Network / No API limit)
+    // Local Folder Scan fallback (Works offline / zero API required)
     document.getElementById('local-folder').addEventListener('change', function(e) {
       var files = Array.from(e.target.files);
       if (!files.length) return;
