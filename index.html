@@ -317,7 +317,7 @@ kbd{background:#1e293b;border:1px solid #334155;color:var(--primary);padding:1px
         <h4><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></span>About KaiTuneR</h4>
         <p><b>Version:</b> 4.0 Pro Edition</p>
         <p><b>Engine:</b> Web Audio API + Pro WAV DSP</p>
-        <p><b>Architecture:</b> Virtual Chunk Lazy-Rendering + Debounced Fast Search.</p>
+        <p><b>Architecture:</b> Virtual Chunk Lazy-Rendering + Fast Online DB Sync.</p>
       </div>
     </section>
   </main>
@@ -618,44 +618,15 @@ var AudioCutter = (function(){
 
 document.addEventListener('DOMContentLoaded', function(){
   var defaultTracks = [
-  {
-    id: "def_1",
-    title: "Cyber Beat Ringtone",
-    artist: "Synth Lab",
-    category: "ringtones",
-    url: "https://actions.google.com/sounds/v1/science_fiction/scifi_laser_burst.ogg"
-  },
-  {
-    id: "def_2",
-    title: "Electro Bass Drop",
-    artist: "Pulse Studio",
-    category: "ringtones",
-    url: "https://actions.google.com/sounds/v1/science_fiction/teleport.ogg"
-  },
-  {
-    id: "def_3",
-    title: "Acoustic Melody",
-    artist: "Guitar Vibes",
-    category: "music",
-    url: "https://actions.google.com/sounds/v1/ambiences/outdoor_market.ogg"
-  },
-  {
-    id: "def_4",
-    title: "Peaceful Morning",
-    artist: "Zenith Sound",
-    category: "music",
-    url: "https://actions.google.com/sounds/v1/weather/light_rain.ogg"
-  },
-  {
-    id: "def_5",
-    title: "Notification Chime FX",
-    artist: "Bell Tone",
-    category: "ringtones",
-    url: "https://actions.google.com/sounds/v1/foley/beeps_single.ogg"
-  }
-];
+    { id: "def_1", title: "Cyber Beat Ringtone", artist: "Synth Lab", category: "ringtones", url: "https://actions.google.com/sounds/v1/science_fiction/scifi_laser_burst.ogg" },
+    { id: "def_2", title: "Electro Bass Drop", artist: "Pulse Studio", category: "ringtones", url: "https://actions.google.com/sounds/v1/science_fiction/teleport.ogg" },
+    { id: "def_3", title: "Acoustic Melody", artist: "Guitar Vibes", category: "music", url: "https://actions.google.com/sounds/v1/ambiences/outdoor_market.ogg" },
+    { id: "def_4", title: "Peaceful Morning", artist: "Zenith Sound", category: "music", url: "https://actions.google.com/sounds/v1/weather/light_rain.ogg" },
+    { id: "def_5", title: "Notification Chime FX", artist: "Bell Tone", category: "ringtones", url: "https://actions.google.com/sounds/v1/foley/beeps_single.ogg" }
+  ];
 
   var allTracks = defaultTracks.slice(),
+      hasLoadedRemoteData = false,
       playbackQueue = [],
       favorites = JSON.parse(localStorage.getItem('kune_favorites') || '[]'),
       currentCategory = 'all',
@@ -688,40 +659,65 @@ document.addEventListener('DOMContentLoaded', function(){
   function fetchJsonWithFallback(localPath, remoteBase, callback){
     var cleanLocal = localPath.replace(/^\/+/, ''),
         remoteUrl = remoteBase.replace(/\/+$/, '') + '/' + cleanLocal;
-    function doRequest(targetUrl, isFallback){
+
+    function doFetch(url, isFallback){
+      if(typeof fetch !== 'undefined'){
+        fetch(url, { method: 'GET', cache: 'no-cache' })
+          .then(function(res){
+            if(!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function(jsonData){
+            callback(null, jsonData, url);
+          })
+          .catch(function(err){
+            if(!isFallback){
+              doFetch(remoteUrl, true);
+            } else {
+              doXHR(url, isFallback);
+            }
+          });
+      } else {
+        doXHR(url, isFallback);
+      }
+    }
+
+    function doXHR(targetUrl, isFallback){
       var xhr = new XMLHttpRequest();
       xhr.open('GET', targetUrl, true);
       xhr.timeout = 10000;
       xhr.onload = function(){
-        if(xhr.status === 200 || (xhr.status === 0 && xhr.responseText)){
+        if(xhr.status === 200 || (xhr.status === 0 && xhr.responseText && xhr.responseText.length > 2)){
           try{
-            callback(null, JSON.parse(xhr.responseText), targetUrl);
+            var parsed = JSON.parse(xhr.responseText);
+            callback(null, parsed, targetUrl);
           }catch(e){
-            if(!isFallback) doRequest(remoteUrl, true);
+            if(!isFallback) doFetch(remoteUrl, true);
             else callback(e, null, targetUrl);
           }
         } else {
-          if(!isFallback) doRequest(remoteUrl, true);
+          if(!isFallback) doFetch(remoteUrl, true);
           else callback(new Error('Status:' + xhr.status), null, targetUrl);
         }
       };
       xhr.onerror = function(){
-        if(!isFallback) doRequest(remoteUrl, true);
+        if(!isFallback) doFetch(remoteUrl, true);
         else callback(new Error('Network error on ' + targetUrl), null, targetUrl);
       };
       xhr.ontimeout = function(){
-        if(!isFallback) doRequest(remoteUrl, true);
+        if(!isFallback) doFetch(remoteUrl, true);
         else callback(new Error('Timeout on ' + targetUrl), null, targetUrl);
       };
       xhr.send();
     }
-    doRequest(cleanLocal, false);
+
+    doFetch(cleanLocal, false);
   }
 
   function normalizeTrackList(rawData, defaultCategory, sourceUrl){
     var rawList = Array.isArray(rawData) ? rawData : (rawData.tracks || rawData.data || rawData.songs || []),
         normalized = [],
-        baseDirectory = sourceUrl.substring(0, sourceUrl.lastIndexOf('/') + 1);
+        baseDirectory = sourceUrl ? sourceUrl.substring(0, sourceUrl.lastIndexOf('/') + 1) : '';
     for(var i = 0; i < rawList.length; i++){
       var item = rawList[i];
       if(!item) continue;
@@ -747,6 +743,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
   function mergeTracks(newTracks){
     if(!newTracks || newTracks.length === 0) return;
+    
+    if(!hasLoadedRemoteData){
+      allTracks = allTracks.filter(function(t){ return !t.id.startsWith('def_'); });
+      hasLoadedRemoteData = true;
+    }
+
     for(var i = 0; i < newTracks.length; i++){
       var nt = newTracks[i], exists = false;
       for(var j = 0; j < allTracks.length; j++){
@@ -758,6 +760,11 @@ document.addEventListener('DOMContentLoaded', function(){
       }
       if(!exists) allTracks.push(nt);
     }
+
+    if(allTracks.length === 0){
+      allTracks = defaultTracks.slice();
+    }
+
     updateCategoryBadges();
     if(currentView === 'view-list') filterAndRenderCurrentCategory();
   }
@@ -776,10 +783,16 @@ document.addEventListener('DOMContentLoaded', function(){
 
   function loadDatabases(){
     fetchJsonWithFallback('audio/music/db.json', REMOTE_BASE, function(err, data, resolvedUrl){
-      if(!err && data) mergeTracks(normalizeTrackList(data, 'music', resolvedUrl));
+      if(!err && data){
+        var list = normalizeTrackList(data, 'music', resolvedUrl);
+        mergeTracks(list);
+      }
     });
     fetchJsonWithFallback('audio/viral/db.json', REMOTE_BASE, function(err, data, resolvedUrl){
-      if(!err && data) mergeTracks(normalizeTrackList(data, 'viral', resolvedUrl));
+      if(!err && data){
+        var list = normalizeTrackList(data, 'viral', resolvedUrl);
+        mergeTracks(list);
+      }
     });
   }
   loadDatabases();
@@ -827,7 +840,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(isBuffering){
         return '<svg class="spin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-dasharray="28" stroke-dashoffset="10" stroke-linecap="round" fill="none"/></svg>';
       } else if(isPlaying){
-        return '<svg viewBox="0 0 24 24"><line x1="10" y1="5" x2="10" y2="19" stroke-width="3"></line><line x1="14" y1="5" x2="14" y2="19" stroke-width="3"></line></svg>';
+        return '<svg viewBox="0 0 24 24" xmlns="http://w3.org" width="100" height="100"><rect x="6" y="4" width="4" height="16" rx="2" fill="#38bdf8" /><rect x="14" y="4" width="4" height="16" rx="2" fill="#38bdf8" /></svg>';
       }
     }
     return '<svg viewBox="0 0 24 24"><polygon points="6 4 18 12 6 20 6 4" fill="currentColor"></polygon></svg>';
