@@ -12,5 +12,26 @@
     "artist": "Unknown Artist",
     "category": "music",
     "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Airtel Original Music.mp3"
+  },
+  {
+    "id": "music_3_broken_angel__official_video_",
+    "title": "Broken Angel (Official Video)",
+    "artist": "Arash feat. Helena",
+    "category": "music",
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Arash feat. Helena - Broken Angel (Official Video).mp3"
+  },
+  {
+    "id": "music_4_chennai_express__sad_theme_",
+    "title": "Chennai Express (Sad Theme)",
+    "artist": "Unknown Artist",
+    "category": "music",
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Chennai Express (Sad Theme).mp3"
+  },
+  {
+    "id": "music_5_sadanari_jtsp_boy_x_jester_d_x_noty_d",
+    "title": "Sadanari Jtsp boy X Jester D X Noty D",
+    "artist": "Unknown Artist",
+    "category": "music",
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Sadanari Jtsp boy X Jester_D X Noty_D.opus"
   }
 ]
