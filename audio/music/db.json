@@ -1,37 +1,79 @@
 [
   {
-    "id": "music_1_airtel__orchestral_version_",
+    "id": "music_1_mar_mitenge_2_movie_mar_mitenge_2_ramayya_vasthavayya_ringtone__by_fringster_com",
+    "title": "_Mar_Mitenge_2_Movie_Mar_Mitenge_2_Ramayya_Vasthavayya_Ringtone_(by Fringster.com)",
+    "artist": "Unknown Artist",
+    "category": "music",
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/_Mar_Mitenge_2_Movie_Mar_Mitenge_2_Ramayya_Vasthavayya_Ringtone_%28by%20Fringster.com%29.mp3"
+  },
+  {
+    "id": "music_2_airtel_orchestral_version",
     "title": "Airtel (Orchestral Version)",
     "artist": "Unknown Artist",
     "category": "music",
-    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Airtel (Orchestral Version).mp3"
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Airtel%20%28Orchestral%20Version%29.mp3"
   },
   {
-    "id": "music_2_airtel_original_music",
+    "id": "music_3_airtel_original_music",
     "title": "Airtel Original Music",
     "artist": "Unknown Artist",
     "category": "music",
-    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Airtel Original Music.mp3"
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Airtel%20Original%20Music.mp3"
   },
   {
-    "id": "music_3_broken_angel__official_video_",
+    "id": "music_4_broken_angel_official_video",
     "title": "Broken Angel (Official Video)",
     "artist": "Arash feat. Helena",
     "category": "music",
-    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Arash feat. Helena - Broken Angel (Official Video).mp3"
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Arash%20feat.%20Helena%20-%20Broken%20Angel%20%28Official%20Video%29.mp3"
   },
   {
-    "id": "music_4_chennai_express__sad_theme_",
+    "id": "music_5_chennai_express_sad_theme",
     "title": "Chennai Express (Sad Theme)",
     "artist": "Unknown Artist",
     "category": "music",
-    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Chennai Express (Sad Theme).mp3"
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Chennai%20Express%20%28Sad%20Theme%29.mp3"
   },
   {
-    "id": "music_5_sadanari_jtsp_boy_x_jester_d_x_noty_d",
-    "title": "Sadanari Jtsp boy X Jester D X Noty D",
+    "id": "music_6_whoopty_ghost_rider",
+    "title": "WHOOPTY Ghost Rider",
+    "artist": "CJ",
+    "category": "music",
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/CJ%20-%20WHOOPTY%20Ghost%20Rider.mp3"
+  },
+  {
+    "id": "music_7_triangle_violin_classic",
+    "title": "Triangle Violin Classic",
+    "artist": "DJ Muratti",
+    "category": "music",
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/DJ%20Muratti%20-%20Triangle%20Violin%20Classic.mp3"
+  },
+  {
+    "id": "music_8_fi_ha_burak_balkan_ft_ken_block_s_gymkhana",
+    "title": "Fi Ha Burak Balkan ft Ken Block s GYMKHANA",
     "artist": "Unknown Artist",
     "category": "music",
-    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Sadanari Jtsp boy X Jester_D X Noty_D.opus"
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Fi%20Ha%20Burak%20Balkan%20ft%20Ken%20Block%20s%20GYMKHANA.mp3"
+  },
+  {
+    "id": "music_9_aman_aman",
+    "title": "Aman Aman",
+    "artist": "Kamro",
+    "category": "music",
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Kamro%20-%20Aman%20Aman.mp3"
+  },
+  {
+    "id": "music_10_sadanari_jtsp_boy_x_jester_d_x_noty_d",
+    "title": "Sadanari Jtsp boy X Jester_D X Noty_D",
+    "artist": "Unknown Artist",
+    "category": "music",
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Sadanari%20Jtsp%20boy%20X%20Jester_D%20X%20Noty_D.opus"
+  },
+  {
+    "id": "music_11_hotel_riu_styczen",
+    "title": "Hotel Riu Styczen",
+    "artist": "ZEA DUBAI",
+    "category": "music",
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/ZEA%20DUBAI%20-%20Hotel%20Riu%20Styczen.mp3"
   }
 ]
