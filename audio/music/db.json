@@ -70,7 +70,14 @@
     "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Sadanari%20Jtsp%20boy%20X%20Jester_D%20X%20Noty_D.opus"
   },
   {
-    "id": "music_11_hotel_riu_styczen",
+    "id": "music_11_shenai_bollywood",
+    "title": "Shenai Bollywood",
+    "artist": "Unknown Artist",
+    "category": "music",
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Shenai%20Bollywood.mp3"
+  },
+  {
+    "id": "music_12_hotel_riu_styczen",
     "title": "Hotel Riu Styczen",
     "artist": "ZEA DUBAI",
     "category": "music",
