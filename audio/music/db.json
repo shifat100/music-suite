@@ -77,7 +77,14 @@
     "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Shenai%20Bollywood.mp3"
   },
   {
-    "id": "music_12_hotel_riu_styczen",
+    "id": "music_12_hayati",
+    "title": "Hayati",
+    "artist": "Yusuf Eksioglu",
+    "category": "music",
+    "url": "https://raw.githubusercontent.com/shifat100/music-suite/main/audio/music/Yusuf%20Eksioglu%20-%20Hayati.mp3"
+  },
+  {
+    "id": "music_13_hotel_riu_styczen",
     "title": "Hotel Riu Styczen",
     "artist": "ZEA DUBAI",
     "category": "music",
